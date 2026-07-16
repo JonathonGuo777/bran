@@ -1,0 +1,20 @@
+{
+  "name": "bran",
+  "interface": {
+    "displayName": "Bran"
+  },
+  "plugins": [
+    {
+      "name": "bran",
+      "source": {
+        "source": "local",
+        "path": "./plugins/bran"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
