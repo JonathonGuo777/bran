@@ -17,3 +17,5 @@ jobs:
           node-version: 22
       - run: node scripts/validate-repo.mjs
       - run: node --check plugins/bran/skills/bran/scripts/audit-package.mjs
+      - run: node --check plugins/bran/skills/bran/scripts/audit-production-package.mjs
+      - run: node scripts/test-audit-production.mjs

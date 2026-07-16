@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-Bran is an Agent Skill for compiling and auditing executable branching-story packages for replayable, multi-seat AI games.
+Bran is an Agent Skill for compiling and auditing executable branching-story packages for replayable, multi-seat AI games. It can also extend a validated story package into a reproducible storyboard, generation-task, media-selection, and export handoff.
 
 It is designed for a recurring production failure: a story package may contain many branches on paper while giving players the same strategy, the same dominant choice, or an ending that contradicts the final world state. Bran turns narrative intent into typed actions and checks the resulting behavior.
 
@@ -19,6 +19,13 @@ typed actions + recipe overrides + costs + counterplay
 deterministic reducer -> world state -> settlement receipt -> ending projection
 ```
 
+When media production is in scope, Bran adds an isolated downstream contract:
+
+```text
+stable narrative IDs -> reviewable extraction candidates -> reusable entity assets
+                     -> prepared shots -> generation tasks -> media assets -> export
+```
+
 ## What Bran checks
 
 - Every replay recipe changes the decision layer in at least three scenes.
@@ -28,6 +35,10 @@ deterministic reducer -> world state -> settlement receipt -> ending projection
 - Waiting players retain visible state, local actions, and a clear next unlock.
 - Ending text is projected from reduced world state instead of fixed dialogue.
 - Deterministic traces cover every scene, merge, cost, signature, settlement, and carryover consequence.
+- Extracted characters, scenes, props, costumes, and dialogue remain candidates until reviewed.
+- Shot preparation, generation readiness, runtime tasks, and media selection use separate state machines.
+- Every prompt, model profile, reference frame, provider task, and generated asset remains traceable.
+- Exports contain only accepted media and carry a reproducible integrity hash.
 
 The default quality gates include a compiled action-graph Jaccard distance of at least `0.30`, fixed decision-cue reuse of at most `0.40`, complete scene coverage, full state-path registration, and settlement golden vectors with a `100%` pass rate.
 
@@ -77,7 +88,13 @@ For packages that follow Bran's artifact contract, run the independent auditor d
 node plugins/bran/skills/bran/scripts/audit-package.mjs /absolute/path/to/upstream_handoff
 ```
 
-The auditor exits with code `0` on a pass and code `1` when a gate fails. Its JSON output can be stored as a CI artifact or release receipt.
+If the handoff contains `production/media-production-manifest.json`, run the production auditor too:
+
+```bash
+node plugins/bran/skills/bran/scripts/audit-production-package.mjs /absolute/path/to/upstream_handoff
+```
+
+The auditors exit with code `0` on a pass and code `1` when a gate fails. Their JSON output can be stored as a CI artifact or release receipt.
 
 ## Repository layout
 
@@ -90,8 +107,12 @@ The auditor exits with code `0` on a pass and code `1` when a gate fails. Its JS
 │       ├── SKILL.md
 │       ├── agents/openai.yaml
 │       ├── references/
-│       └── scripts/audit-package.mjs
-├── scripts/validate-repo.mjs
+│       └── scripts/
+│           ├── audit-package.mjs
+│           └── audit-production-package.mjs
+├── scripts/
+│   ├── test-audit-production.mjs
+│   └── validate-repo.mjs
 └── README.md
 ```
 
@@ -104,8 +125,13 @@ Bran expects a versioned handoff with source provenance, canon and visibility pa
 The exact responsibilities and default gates live in:
 
 - [`artifact-contract.md`](plugins/bran/skills/bran/references/artifact-contract.md)
+- [`media-production-contract.md`](plugins/bran/skills/bran/references/media-production-contract.md)
 - [`quality-gates.md`](plugins/bran/skills/bran/references/quality-gates.md)
 - [`skill-adaptation.md`](plugins/bran/skills/bran/references/skill-adaptation.md)
+
+## Design lineage
+
+The optional production contract adapts general workflow patterns studied in [Forget-C/Jellyfish](https://github.com/Forget-C/Jellyfish): stable project-to-shot structure, reviewable extraction candidates, reusable visual assets, provider-neutral generation preparation, business-owned task state, media provenance, and export integrity. Bran re-expresses these patterns as portable JSON/JSONL contracts and deterministic audits; it does not vendor Jellyfish application code.
 
 ## Design boundary
 

@@ -1,7 +1,7 @@
 {
   "name": "bran",
-  "version": "0.1.0",
-  "description": "Compile and audit executable branching-story packages for replayable multi-seat AI games.",
+  "version": "0.2.0",
+  "description": "Compile and audit executable branching-story packages and reproducible media-production handoffs.",
   "author": {
     "name": "Jon Guo",
     "url": "https://github.com/JonathonGuo777"
@@ -14,13 +14,15 @@
     "branching-narrative",
     "interactive-fiction",
     "multi-agent",
-    "narrative-game"
+    "narrative-game",
+    "storyboard",
+    "media-generation"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Bran",
-    "shortDescription": "Compile and validate branching story packages",
-    "longDescription": "Turn source material and world rules into validated branching-story packages with typed actions, multi-seat visibility, replay variants, Agent information-gain tests, carryover consequences, deterministic settlement, and reproducible receipts.",
+    "shortDescription": "Compile story packages and media-production handoffs",
+    "longDescription": "Turn source material and world rules into validated branching-story packages with typed actions, multi-seat visibility, replay variants, deterministic settlement, optional storyboard preparation, provider-neutral generation tasks, media provenance, and reproducible export receipts.",
     "developerName": "Jon Guo",
     "category": "Productivity",
     "capabilities": [
@@ -28,6 +30,6 @@
       "Write",
       "Shell"
     ],
-    "defaultPrompt": "Use $bran to compile and validate this executable branching story package."
+    "defaultPrompt": "Use $bran to compile and validate this branching story package and its media-production handoff."
   }
 }

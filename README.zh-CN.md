@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-Bran 是一个面向可复玩、多席位 AI 游戏的 Agent Skill，用于编译和审计可执行的分支剧本包。
+Bran 是一个面向可复玩、多席位 AI 游戏的 Agent Skill，用于编译和审计可执行的分支剧本包。它也可以把已验证的剧本包继续扩展为可复现的分镜准备、生成任务、媒体筛选和导出交接包。
 
 它处理一种常见的生产问题：剧本在文档里看起来分支很多，玩家实际进入后仍会走向相同策略、相同支配选项，或者结局文案与最终世界状态互相矛盾。Bran 会把叙事意图转成带前置条件、状态效果、成本和反制的行动，再检查这些行动是否真的构成了不同玩法。
 
@@ -19,6 +19,13 @@ Bran 是一个面向可复玩、多席位 AI 游戏的 Agent Skill，用于编�
 确定性结算器 -> 世界状态 -> 结算回执 -> 结局投影
 ```
 
+涉及媒体生产时，Bran 会增加一层与叙事状态隔离的下游契约：
+
+```text
+稳定叙事 ID -> 待确认提取项 -> 可复用实体资产
+            -> 已准备镜头 -> 生成任务 -> 媒体资产 -> 导出
+```
+
 ## Bran 会检查什么
 
 - 每套周目配方至少改动三幕的决策机制。
@@ -28,6 +35,10 @@ Bran 是一个面向可复玩、多席位 AI 游戏的 Agent Skill，用于编�
 - 等待中的玩家仍能看到当前状态、执行本席动作并理解下一项解锁。
 - 结局文字由最终世界状态投影生成，不依赖固定台词猜测结果。
 - 确定性试玩轨迹覆盖全部场景、汇合、成本、签名、结算和跨局后果。
+- 提取出的角色、场景、道具、服装和对白在人工确认前保持候选状态。
+- 镜头准备、生成就绪、运行任务和媒体选择使用彼此独立的状态机。
+- 每次生成都能追溯到提示词模板、模型配置、参考帧、任务和输出媒体。
+- 导出只使用已接受媒体，并带有可重新计算的完整性哈希。
 
 默认门禁包括：相邻周目编译后行动图 Jaccard 距离不低于 `0.30`，固定决策提示复用率不高于 `0.40`，状态写入路径全部注册，结算黄金向量通过率为 `100%`。
 
@@ -77,6 +88,12 @@ Bran 遵循可移植的 `SKILL.md` 约定。其他兼容 Agent 也可以将 `plu
 node plugins/bran/skills/bran/scripts/audit-package.mjs /absolute/path/to/upstream_handoff
 ```
 
+交接包中存在 `production/media-production-manifest.json` 时，还要运行生产审计器：
+
+```bash
+node plugins/bran/skills/bran/scripts/audit-production-package.mjs /absolute/path/to/upstream_handoff
+```
+
 审计通过时退出码为 `0`，任何门禁失败时退出码为 `1`。JSON 输出可以进入 CI 或版本发布回执。
 
 ## 产物契约
@@ -86,8 +103,13 @@ Bran 要求交接包包含版本与来源、正典事实和可见性分区、角
 详细定义位于：
 
 - [`artifact-contract.md`](plugins/bran/skills/bran/references/artifact-contract.md)
+- [`media-production-contract.md`](plugins/bran/skills/bran/references/media-production-contract.md)
 - [`quality-gates.md`](plugins/bran/skills/bran/references/quality-gates.md)
 - [`skill-adaptation.md`](plugins/bran/skills/bran/references/skill-adaptation.md)
+
+## 设计来源
+
+可选生产契约参考了 [Forget-C/Jellyfish](https://github.com/Forget-C/Jellyfish) 中可复用的工作流设计，包括稳定的项目到镜头层级、待确认提取项、可复用视觉资产、与供应商解耦的生成准备、业务侧任务状态、媒体溯源和导出完整性。Bran 将这些设计重新表达为可移植的 JSON/JSONL 契约与确定性审计，没有直接打包 Jellyfish 的应用代码。
 
 ## 能力边界
 
