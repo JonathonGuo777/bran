@@ -17,10 +17,13 @@ const skillPath = requireFile('plugins/bran/skills/bran/SKILL.md')
 for (const relativePath of [
   'plugins/bran/skills/bran/agents/openai.yaml',
   'plugins/bran/skills/bran/references/artifact-contract.md',
+  'plugins/bran/skills/bran/references/media-production-contract.md',
   'plugins/bran/skills/bran/references/quality-gates.md',
   'plugins/bran/skills/bran/references/skill-adaptation.md',
   'plugins/bran/skills/bran/scripts/audit-package.mjs',
+  'plugins/bran/skills/bran/scripts/audit-production-package.mjs',
   'plugins/bran/skills/bran/LICENSE.txt',
+  'scripts/test-audit-production.mjs',
   'README.md',
   'README.zh-CN.md',
   'LICENSE'
@@ -39,6 +42,7 @@ if (plugin) {
   if (plugin.name !== 'bran') failures.push('plugin name must be bran')
   if (plugin.skills !== './skills/') failures.push('plugin skills path must be ./skills/')
   if (!/^\d+\.\d+\.\d+$/.test(plugin.version ?? '')) failures.push('plugin version must use semver')
+  if (!plugin.interface?.defaultPrompt?.includes('$bran')) failures.push('plugin default prompt must mention $bran')
 }
 
 if (marketplace) {

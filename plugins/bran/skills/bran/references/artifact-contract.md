@@ -22,3 +22,9 @@ The minimum package contains these responsibilities. Filenames may vary when the
 | Quality receipt | Machine-generated status, checks, blockers, warnings, execution evidence, current artifact hash |
 
 Stable IDs must survive downstream asset production. Public world text uses third-person factual narration. Operational instructions stay in action objects.
+
+## Optional media-production extension
+
+Add a `production/` directory only when the handoff continues into storyboard preparation, image or video generation, media selection, or export. Its files and status semantics are defined in [media-production-contract.md](media-production-contract.md).
+
+The extension must preserve the narrative package as its source of truth. Reference narrative scene, action, character, and canon IDs instead of copying or renaming them. Keep production-specific state outside `WorldState`; generation tasks and media selection cannot rewrite narrative settlement.

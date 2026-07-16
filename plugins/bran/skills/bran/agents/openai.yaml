@@ -1,4 +1,4 @@
 interface:
   display_name: "Bran"
-  short_description: "Compile and validate executable branching story packages"
-  default_prompt: "Use $bran to compile and validate this executable branching story package."
+  short_description: "Compile story packages and media-production handoffs"
+  default_prompt: "Use $bran to compile and validate this branching story package and its media-production handoff."

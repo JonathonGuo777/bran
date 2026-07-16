@@ -16,6 +16,13 @@ If the change affects the package contract or auditor, also run the auditor agai
 node plugins/bran/skills/bran/scripts/audit-package.mjs /absolute/path/to/upstream_handoff
 ```
 
+For media-production contract changes, run the production regression test and audit a complete handoff:
+
+```bash
+node scripts/test-audit-production.mjs
+node plugins/bran/skills/bran/scripts/audit-production-package.mjs /absolute/path/to/upstream_handoff
+```
+
 The pull request should explain which contract changed, why the old behavior was insufficient, and which trace or golden vector proves the new behavior.
 
 ## Scope
