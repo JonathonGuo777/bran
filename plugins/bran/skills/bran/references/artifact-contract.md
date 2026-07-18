@@ -4,6 +4,7 @@ The minimum package contains these responsibilities. Filenames may vary when the
 
 | Responsibility | Required content |
 | --- | --- |
+| Source event ledger | Stable event IDs, source spans, participants, action, result, causal predecessors, canon status, confidence, review status |
 | Source manifest | Version, sources, rights, artifact index, counts, compile status |
 | Canon and visibility | Stable facts, source references, public and private partitions, new-player briefing |
 | Character contracts | Want, Need, conflict, voice, OOC boundaries, scene arc, provenance |
@@ -20,5 +21,9 @@ The minimum package contains these responsibilities. Filenames may vary when the
 | Carryover | Condition, consequence class, action/resource/visibility/reachability changes, revoke condition |
 | Replay evidence | Complete-scene deterministic traces, cost receipts, merge receipts, actual settlement, state hashes |
 | Quality receipt | Machine-generated status, checks, blockers, warnings, execution evidence, current artifact hash |
+| Runtime contract | Runtime operations, authority split, WorldEvent, RelationshipEventCandidate, ContentFeedback |
+| Production request | Semantic asset slots, stable scene and beat references, continuity needs, runtime cue, fallback policy |
 
 Stable IDs must survive downstream asset production. Public world text uses third-person factual narration. Operational instructions stay in action objects.
+
+Use `compiled`, `reviewed`, and `release` as distinct lifecycle states. Static compilation cannot create replay evidence or human approval by declaration.

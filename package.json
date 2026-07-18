@@ -1,0 +1,19 @@
+{
+  "name": "bran-narrative-compiler",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Compile and audit executable branching-story packages.",
+  "bin": {
+    "bran": "plugins/bran/skills/bran/scripts/bran.mjs"
+  },
+  "scripts": {
+    "test": "node scripts/test-core.mjs",
+    "validate": "node scripts/validate-repo.mjs",
+    "verify": "node scripts/validate-repo.mjs && node scripts/test-core.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

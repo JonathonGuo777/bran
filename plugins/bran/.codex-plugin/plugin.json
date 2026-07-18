@@ -1,7 +1,7 @@
 {
   "name": "bran",
-  "version": "0.1.0",
-  "description": "Compile and audit executable branching-story packages for replayable multi-seat AI games.",
+  "version": "0.2.0",
+  "description": "Compile structured story events into executable narrative packages and audit their branching mechanics.",
   "author": {
     "name": "Jon Guo",
     "url": "https://github.com/JonathonGuo777"
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Bran",
     "shortDescription": "Compile and validate branching story packages",
-    "longDescription": "Turn source material and world rules into validated branching-story packages with typed actions, multi-seat visibility, replay variants, Agent information-gain tests, carryover consequences, deterministic settlement, and reproducible receipts.",
+    "longDescription": "Turn grounded source events and world rules into validated NarrativePackages with typed actions, multi-seat visibility, replay variants, runtime and downstream handoff contracts, deterministic settlement, and reproducible receipts.",
     "developerName": "Jon Guo",
     "category": "Productivity",
     "capabilities": [

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/runtime-contract.schema.json",
+  "title": "Bran Runtime Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "packageVersion", "authority", "operations", "eventContracts"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "1.0.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "packageVersion": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "required": ["content", "runtime", "relationship", "stateMutationRule"],
+      "properties": {
+        "content": { "const": "hodor.bran" },
+        "runtime": { "type": "string", "minLength": 1 },
+        "relationship": { "type": "string", "minLength": 1 },
+        "stateMutationRule": { "const": "Natural language and character prose must resolve to a typed action before world state changes." }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "loadPackage",
+          "getSceneView",
+          "listActions",
+          "resolveIntent",
+          "submitAction",
+          "reduceWorldState",
+          "settle",
+          "pause",
+          "resume",
+          "verifyVersion"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "eventContracts": {
+      "type": "object",
+      "required": ["WorldEvent", "RelationshipEventCandidate", "ContentFeedback"],
+      "properties": {
+        "WorldEvent": { "type": "object" },
+        "RelationshipEventCandidate": { "type": "object" },
+        "ContentFeedback": { "type": "object" }
+      }
+    }
+  }
+}

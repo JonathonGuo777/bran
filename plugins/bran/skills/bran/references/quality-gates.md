@@ -22,6 +22,11 @@ Use these defaults unless the user supplies stricter thresholds.
 | Ending reachability | Every declared target equals the reducer result; package covers all intended ending classes |
 | Draft and escrow integrity | Non-empty draft hash; signatures match; active escrow has same-revision signatures and a cost receipt |
 | Quality receipt freshness | Artifact hash matches current package |
+| Source event grounding | Every accepted event has a resolved source span and causal references |
+| Derived state executability | Every derived field has a machine-readable expression |
+| Compile receipt freshness | Compiler artifact hash matches the current compiled package |
+| Runtime authority | Natural language resolves to a typed action before state mutation |
+| Production authority | Asset-slot fulfillment cannot mutate narrative world state or settlement |
 
 The settlement renderer must preserve independent truths. A failed broadcast does not imply failed protection. An authorization revocation invalidates dependent draft signatures. A draft revision invalidates signatures bound to an older hash.
 

@@ -11,7 +11,35 @@ Turn source material and world rules into a story package whose branches, action
 
 Read the project instructions and the current handoff package before editing. Preserve user-owned changes and source locks. Separate retained source wording, grounded adaptation, and demo invention with explicit provenance.
 
-Read [artifact-contract.md](references/artifact-contract.md) before changing package structure. Read [quality-gates.md](references/quality-gates.md) before accepting a result. Read [skill-adaptation.md](references/skill-adaptation.md) when adapting story, character, or novel workflows.
+Read [compiler-contract.md](references/compiler-contract.md) before compiling a `BranInputBundle` or changing compiler schemas. Read [artifact-contract.md](references/artifact-contract.md) before changing package structure. Read [quality-gates.md](references/quality-gates.md) before accepting a result. Read [skill-adaptation.md](references/skill-adaptation.md) when adapting story, character, or novel workflows.
+
+## Compile reviewed authoring output
+
+Keep creative generation separate from deterministic compilation. Convert reviewed source events, canon facts, characters, scenes, typed actions, state fields, settlement rules, Agent boundaries, runtime events, and semantic asset slots into a `BranInputBundle`.
+
+Compile it with:
+
+```bash
+node scripts/bran.mjs compile /absolute/path/to/bran-input.json --out /absolute/path/to/handoff
+```
+
+Use machine-readable expressions for every derived state field and settlement predicate. A prose formula is documentation and cannot be independently recomputed.
+
+Bind author approval to current artifact hashes one stage at a time:
+
+```bash
+node scripts/bran.mjs review /absolute/path/to/handoff --stage narrative --status accepted --reviewer author-name
+```
+
+The package becomes `reviewed` only after source events, canon, characters, narrative, Agents, runtime, and production request stages all hold fresh accepted reviews.
+
+Compile content changes into a new immutable `packageVersion`, set `lineage.parentPackageVersion`, and inspect stable-ID changes before review:
+
+```bash
+node scripts/bran.mjs diff /absolute/path/to/base-handoff /absolute/path/to/candidate-handoff
+```
+
+Rollback means selecting an earlier immutable package version. Do not rewrite a prior reviewed or released package in place.
 
 ## Build the package in three layers
 
@@ -50,7 +78,8 @@ Keep ending prose out of fixed dialogue assets. Project broadcast, protection, e
 Run the package's own validator when present. Then run the independent auditor, which recomputes state paths, references, evidence-action links, action-graph distance, full traces, endings, dominance, and receipt freshness:
 
 ```bash
-node scripts/audit-package.mjs /absolute/path/to/upstream_handoff
+node scripts/bran.mjs audit /absolute/path/to/handoff --level compile
+node scripts/bran.mjs audit /absolute/path/to/release-handoff --level release
 ```
 
 Use adversarial player perspectives after static validation. Give fresh testers only seat-visible information. Ask them to complete multiple recipes without exposing intended answers. Record clarity, agency, negotiation value, repeated dominant paths, and replay novelty.
@@ -59,4 +88,4 @@ Treat a generated quality receipt as the release authority only while its artifa
 
 ## Deliver
 
-Provide a versioned handoff directory, package files, schemas, reproducible tools, quality receipts, playtest evidence, and a concise downstream field contract. State the difference between machine-validated content mechanics and human-validated fun.
+Provide a versioned handoff directory, package files, schemas, reproducible tools, quality receipts, playtest evidence, and concise runtime and production-request contracts. The production request declares semantic asset slots only; downstream material production fills them without mutating narrative state or settlement. State the difference between compiled, reviewed, and release lifecycle states, and between machine-validated content mechanics and human-validated fun.

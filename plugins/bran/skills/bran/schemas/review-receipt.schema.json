@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/review-receipt.schema.json",
+  "title": "Bran Review Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requiredStages",
+    "status",
+    "latestStatusByStage",
+    "reviewedArtifactHashes",
+    "currentArtifactHashes",
+    "staleStages",
+    "ledgerHash",
+    "manifestHash",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "requiredStages": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "status": { "enum": ["draft", "pass"] },
+    "latestStatusByStage": { "type": "object", "additionalProperties": { "enum": ["pending", "accepted", "rejected"] } },
+    "reviewedArtifactHashes": { "type": "object", "additionalProperties": { "type": ["string", "null"] } },
+    "currentArtifactHashes": { "type": "object", "additionalProperties": { "type": "string" } },
+    "staleStages": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "ledgerHash": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "manifestHash": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}
