@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0.0",
+  "dnaId": "DNA-FEMALE-AGENCY-THRILLER",
+  "targetAudience": "English-speaking women aged 25 to 44 who favor emotionally legible professional thrillers",
+  "audiencePromise": "A controlled professional woman converts a threat to her legitimacy into a public demonstration of competence and moral agency.",
+  "genreEnvelope": [
+    "female-led emotional thriller",
+    "professional conspiracy",
+    "slow-burn relational pressure"
+  ],
+  "themes": [
+    "earned authority",
+    "public truth versus private comfort",
+    "chosen legacy"
+  ],
+  "emotionalRewards": [
+    {
+      "rewardId": "REWARD-AGENCY",
+      "function": "The protagonist stops negotiating for permission and defines the terms of the conflict.",
+      "timing": "late second act",
+      "targetIntensity": 4
+    },
+    {
+      "rewardId": "REWARD-BETRAYAL",
+      "function": "A trusted professional relationship is revealed as conditional, producing grief and anger without removing the protagonist's agency.",
+      "timing": "midpoint",
+      "targetIntensity": 4
+    },
+    {
+      "rewardId": "REWARD-RECOGNITION",
+      "function": "The ending makes the protagonist's competence visible to the community and converts private pain into shared value.",
+      "timing": "resolution",
+      "targetIntensity": 5
+    }
+  ],
+  "characterFunctions": [
+    {
+      "functionId": "CHAR-FUNC-LEAD",
+      "role": "high-control female protagonist",
+      "dramaticFunction": "Turns expertise into public leverage",
+      "transformation": "From protecting legitimacy to defining legitimacy"
+    },
+    {
+      "functionId": "CHAR-FUNC-INTIMATE-RIVAL",
+      "role": "intimate professional rival",
+      "dramaticFunction": "Offers safety at the price of silence",
+      "transformation": "From trusted equal to exposed conditional ally"
+    },
+    {
+      "functionId": "CHAR-FUNC-WITNESS",
+      "role": "skeptical witness",
+      "dramaticFunction": "Tests whether the protagonist can translate private evidence into a public case",
+      "transformation": "From observer to accountable participant"
+    }
+  ],
+  "relationshipFunctions": [
+    {
+      "functionId": "REL-FUNC-TRUST-PRICE",
+      "dynamic": "professional intimacy under unequal risk",
+      "pressure": "affection and status are offered in exchange for silence",
+      "visibleChange": "the protagonist rejects the exchange and makes the relationship answerable to public consequences"
+    }
+  ],
+  "narrativeMechanics": [
+    {
+      "mechanicId": "MECH-EVIDENCE-LADDER",
+      "function": "Each new fact changes who holds leverage rather than merely adding information.",
+      "payoff": "The climax uses accumulated proof in a public forum."
+    },
+    {
+      "mechanicId": "MECH-PRIVATE-BARGAIN",
+      "function": "The antagonist offers an emotionally credible private solution that would preserve the corrupt system.",
+      "payoff": "Refusal becomes a character decision with material cost."
+    },
+    {
+      "mechanicId": "MECH-PUBLIC-REVERSAL",
+      "function": "A controlled institutional ritual becomes the arena in which authority changes hands.",
+      "payoff": "Recognition follows demonstrated competence."
+    }
+  ],
+  "pacing": {
+    "format": "five-scene short-form pilot",
+    "openingHookSeconds": 45,
+    "midpointScene": 3,
+    "climaxScene": 4,
+    "endingScene": 5,
+    "pressureCurve": [2, 3, 5, 5, 2]
+  },
+  "marketConstraints": {
+    "targetMarkets": ["United States", "United Kingdom", "Canada"],
+    "language": "English",
+    "rating": "TV-14",
+    "episodeMinutes": 12,
+    "localization": "Contemporary institutional setting with culturally legible professional stakes"
+  },
+  "independentDesignTargets": [
+    "character-system",
+    "relationship-topology",
+    "world",
+    "causal-chain",
+    "key-events",
+    "reversals",
+    "climax",
+    "ending",
+    "dialogue"
+  ]
+}

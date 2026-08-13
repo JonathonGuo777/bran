@@ -4,6 +4,7 @@ The minimum package contains these responsibilities. Filenames may vary when the
 
 | Responsibility | Required content |
 | --- | --- |
+| Source event ledger | Stable event IDs, source spans, participants, action, result, causal predecessors, canon status, confidence, review status |
 | Source manifest | Version, sources, rights, artifact index, counts, compile status |
 | Canon and visibility | Stable facts, source references, public and private partitions, new-player briefing |
 | Character contracts | Want, Need, conflict, voice, OOC boundaries, scene arc, provenance |
@@ -20,5 +21,15 @@ The minimum package contains these responsibilities. Filenames may vary when the
 | Carryover | Condition, consequence class, action/resource/visibility/reachability changes, revoke condition |
 | Replay evidence | Complete-scene deterministic traces, cost receipts, merge receipts, actual settlement, state hashes |
 | Quality receipt | Machine-generated status, checks, blockers, warnings, execution evidence, current artifact hash |
+| Runtime contract | Runtime operations, authority split, WorldEvent, RelationshipEventCandidate, ContentFeedback |
+| Production request | Semantic asset slots, stable scene and beat references, continuity needs, runtime cue, fallback policy |
 
 Stable IDs must survive downstream asset production. Public world text uses third-person factual narration. Operational instructions stay in action objects.
+
+## Optional Hodor target
+
+When the package continues into the Hodor interactive canvas, export `hodor-interactive-story-target.json` after compile audit. Require stable Bran keys for every node, edge, and variable; a complete node script; explicit entry and ending nodes; typed Hodor-compatible effects; the source package artifact hash; and a deterministic target hash.
+
+Hodor must return an import receipt that binds Bran keys to graph, node, edge, variable, and `o_script` IDs and includes the final revision plus a passing graph validation report. Keep this receipt outside the immutable narrative package unless a new package version intentionally records it as downstream evidence.
+
+Use `compiled`, `reviewed`, and `release` as distinct lifecycle states. Static compilation cannot create replay evidence or human approval by declaration.

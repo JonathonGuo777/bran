@@ -1,0 +1,422 @@
+{
+  "$schema": "../../schemas/bran-input-bundle.schema.json",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "projectId": "harbor-signal-example",
+    "title": "Harbor Signal",
+    "language": "en",
+    "packageVersion": "harbor-signal-v1",
+    "runtimeTarget": "example-runtime",
+    "description": "Redistributable compiler fixture with original placeholder story content.",
+    "compiledAt": "2026-07-18T00:00:00.000Z"
+  },
+  "sources": [
+    {
+      "sourceId": "SRC-HARBOR",
+      "path": "sources/harbor-signal.md",
+      "version": "1",
+      "contentHash": "fixture-original-content",
+      "rights": "MIT fixture content",
+      "quotePolicy": "fixture-only"
+    }
+  ],
+  "sourceEvents": [
+    {
+      "eventId": "EV-001",
+      "order": 1,
+      "title": "A damaged signal arrives",
+      "summary": "A repeating rescue signal reaches the harbor office during a storm.",
+      "sourceSpans": [{ "sourceId": "SRC-HARBOR", "locator": { "chapter": "1", "paragraph": 1 } }],
+      "participants": ["CHAR-MARA", "CHAR-ORIN"],
+      "action": "Mara records the signal and asks Orin to verify its pattern.",
+      "result": "The signal becomes available as inspectable evidence.",
+      "causeEventIds": [],
+      "time": "storm-night",
+      "locationId": "LOC-HARBOR-OFFICE",
+      "canonStatus": "source-confirmed",
+      "confidence": 1,
+      "reviewStatus": "accepted"
+    },
+    {
+      "eventId": "EV-002",
+      "order": 2,
+      "title": "The sender is identified",
+      "summary": "The timing pattern matches the missing survey ship's emergency code.",
+      "sourceSpans": [{ "sourceId": "SRC-HARBOR", "locator": { "chapter": "1", "paragraph": 2 } }],
+      "participants": ["CHAR-MARA", "CHAR-ORIN"],
+      "action": "The pair compares the signal against the harbor ledger.",
+      "result": "They can verify, conceal, or qualify the identification.",
+      "causeEventIds": ["EV-001"],
+      "time": "storm-night-plus-5m",
+      "locationId": "LOC-HARBOR-OFFICE",
+      "canonStatus": "source-confirmed",
+      "confidence": 0.98,
+      "reviewStatus": "accepted"
+    },
+    {
+      "eventId": "EV-003",
+      "order": 3,
+      "title": "The harbor must respond",
+      "summary": "The rescue window closes unless the office publishes a coordinated response.",
+      "sourceSpans": [{ "sourceId": "SRC-HARBOR", "locator": { "chapter": "1", "paragraph": 3 } }],
+      "participants": ["CHAR-MARA", "CHAR-ORIN"],
+      "action": "Mara chooses whether to publish while Orin records the evidence boundary.",
+      "result": "The final response depends on verified evidence, shared responsibility, and trust.",
+      "causeEventIds": ["EV-002"],
+      "time": "storm-night-plus-10m",
+      "locationId": "LOC-HARBOR-OFFICE",
+      "canonStatus": "source-confirmed",
+      "confidence": 1,
+      "reviewStatus": "accepted"
+    }
+  ],
+  "canonFacts": [
+    {
+      "factId": "FACT-SIGNAL",
+      "statement": "A repeating rescue signal reached the harbor office.",
+      "sourceEventIds": ["EV-001"],
+      "visibility": ["public", "mara", "orin"],
+      "status": "source-confirmed",
+      "confidence": 1
+    },
+    {
+      "factId": "FACT-MATCH",
+      "statement": "The signal pattern matches the survey ship's emergency code.",
+      "sourceEventIds": ["EV-002"],
+      "visibility": ["mara", "orin"],
+      "status": "source-confirmed",
+      "confidence": 0.98
+    },
+    {
+      "factId": "FACT-WINDOW",
+      "statement": "The rescue window is limited.",
+      "sourceEventIds": ["EV-003"],
+      "visibility": ["public", "mara", "orin"],
+      "status": "source-confirmed",
+      "confidence": 1
+    }
+  ],
+  "characters": [
+    {
+      "characterId": "CHAR-MARA",
+      "displayName": "Mara",
+      "controller": "human",
+      "seat": "mara",
+      "want": "Launch a credible rescue.",
+      "need": "Share responsibility before acting.",
+      "fear": "Publishing an unverified signal.",
+      "errorHabit": "Acts alone under time pressure.",
+      "voice": "Direct and operational.",
+      "oocBoundaries": ["Does not invent verified evidence."],
+      "knowledgeFactIds": ["FACT-SIGNAL", "FACT-WINDOW"]
+    },
+    {
+      "characterId": "CHAR-ORIN",
+      "displayName": "Orin",
+      "controller": "agent",
+      "seat": "orin",
+      "want": "Preserve an accurate evidence boundary.",
+      "need": "Offer an executable next action.",
+      "fear": "A confident claim that exceeds the ledger.",
+      "errorHabit": "Delays when evidence is incomplete.",
+      "voice": "Precise and conditional.",
+      "oocBoundaries": ["Does not claim access to missing records."],
+      "knowledgeFactIds": ["FACT-SIGNAL", "FACT-MATCH", "FACT-WINDOW"]
+    }
+  ],
+  "stateModel": {
+    "fields": [
+      { "path": "world.phase", "type": "string", "defaultValue": "SCENE-01", "writers": ["reducer"] },
+      { "path": "evidence.signalVerified", "type": "boolean", "defaultValue": false, "writers": ["action", "verification"] },
+      { "path": "relationship.trust", "type": "integer", "defaultValue": 0, "writers": ["action"] },
+      { "path": "resources.time", "type": "integer", "defaultValue": 3, "writers": ["action", "reducer"] },
+      { "path": "choice.shared", "type": "boolean", "defaultValue": false, "writers": ["action"] }
+    ],
+    "derivedFields": [
+      {
+        "path": "derived.ready",
+        "expression": {
+          "and": [
+            { "var": "evidence.signalVerified" },
+            { "var": "choice.shared" },
+            { ">": [{ "var": "resources.time" }, 0] }
+          ]
+        }
+      },
+      {
+        "path": "derived.trusted",
+        "expression": { ">=": [{ "var": "relationship.trust" }, 1] }
+      }
+    ],
+    "invariants": ["resources.time cannot fall below zero"]
+  },
+  "scenes": [
+    {
+      "sceneId": "SCENE-01",
+      "title": "Receive",
+      "eventIds": ["EV-001"],
+      "nextSceneIds": ["SCENE-02"],
+      "beats": [
+        {
+          "beatId": "BEAT-01",
+          "kind": "public-signal",
+          "view": "public",
+          "text": "A damaged rescue signal repeats through the storm.",
+          "sourceEventIds": ["EV-001"],
+          "visibility": ["public", "mara", "orin"]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "inspect-signal",
+          "seat": "mara",
+          "label": "Inspect the signal",
+          "preconditions": [{ ">": [{ "var": "resources.time" }, 0] }],
+          "effectOps": [{ "op": "set", "path": "evidence.signalVerified", "value": true }],
+          "costs": [],
+          "counteractionId": "qualify-match",
+          "decisionCueId": "CUE-BASE-01",
+          "publicEcho": "Mara opens the signal ledger."
+        },
+        {
+          "actionId": "qualify-match",
+          "seat": "orin",
+          "label": "Qualify the match",
+          "preconditions": [],
+          "effectOps": [{ "op": "increment", "path": "relationship.trust", "value": 1 }],
+          "costs": [],
+          "counteractionId": "inspect-signal",
+          "decisionCueId": "CUE-BASE-01B",
+          "publicEcho": "Orin states what the ledger can support."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-02",
+      "title": "Verify",
+      "eventIds": ["EV-002"],
+      "nextSceneIds": ["SCENE-03"],
+      "beats": [
+        {
+          "beatId": "BEAT-02",
+          "kind": "evidence-comparison",
+          "view": "shared",
+          "text": "The timing pattern is compared with the survey ship ledger.",
+          "sourceEventIds": ["EV-002"],
+          "visibility": ["mara", "orin"]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "share-responsibility",
+          "seat": "mara",
+          "label": "Share responsibility",
+          "preconditions": [{ "var": "evidence.signalVerified" }],
+          "effectOps": [{ "op": "set", "path": "choice.shared", "value": true }],
+          "costs": [],
+          "counteractionId": "record-boundary",
+          "decisionCueId": "CUE-BASE-02",
+          "publicEcho": "Mara records shared responsibility."
+        },
+        {
+          "actionId": "record-boundary",
+          "seat": "orin",
+          "label": "Record the evidence boundary",
+          "preconditions": [],
+          "effectOps": [{ "op": "increment", "path": "relationship.trust", "value": 1 }],
+          "costs": [],
+          "counteractionId": "share-responsibility",
+          "decisionCueId": "CUE-BASE-02B",
+          "publicEcho": "Orin records the remaining uncertainty."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-03",
+      "title": "Respond",
+      "eventIds": ["EV-003"],
+      "nextSceneIds": [],
+      "beats": [
+        {
+          "beatId": "BEAT-03",
+          "kind": "settlement",
+          "view": "public",
+          "text": "The harbor publishes or holds its response.",
+          "sourceEventIds": ["EV-003"],
+          "visibility": ["public", "mara", "orin"]
+        }
+      ],
+      "actions": [
+        {
+          "actionId": "publish-response",
+          "seat": "mara",
+          "label": "Publish the response",
+          "preconditions": [{ "var": "derived.ready" }],
+          "effectOps": [{ "op": "set", "path": "world.phase", "value": "settled" }],
+          "costs": [{ "op": "decrement", "path": "resources.time", "value": 1 }],
+          "counteractionId": "hold-with-reason",
+          "decisionCueId": "CUE-BASE-03",
+          "publicEcho": "The harbor publishes a response."
+        },
+        {
+          "actionId": "hold-with-reason",
+          "seat": "orin",
+          "label": "Hold with a recorded reason",
+          "preconditions": [],
+          "effectOps": [{ "op": "set", "path": "world.phase", "value": "settled" }],
+          "costs": [],
+          "counteractionId": "publish-response",
+          "decisionCueId": "CUE-BASE-03B",
+          "publicEcho": "Orin records why the response is held."
+        }
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "recipeId": "RECIPE-OPEN",
+      "title": "Open verification",
+      "decisionCueIds": ["CUE-OPEN-01", "CUE-OPEN-02", "CUE-OPEN-03"],
+      "strategyOptions": [{ "strategyId": "OPEN-TRUST", "path": ["RECIPE-OPEN:SCENE-01:mara:open-ledger", "RECIPE-OPEN:SCENE-02:mara:joint-check", "RECIPE-OPEN:SCENE-03:mara:publish-joint"] }],
+      "stageOverrides": [
+        {
+          "sceneId": "SCENE-01",
+          "actions": [{ "actionId": "open-ledger", "seat": "mara", "label": "Open the ledger", "preconditions": [], "effectOps": [{ "op": "set", "path": "evidence.signalVerified", "value": true }], "costs": [], "counteractionId": "preserve-copy", "decisionCueId": "CUE-OPEN-01", "publicEcho": "The ledger is opened." }]
+        },
+        {
+          "sceneId": "SCENE-02",
+          "actions": [{ "actionId": "joint-check", "seat": "mara", "label": "Run a joint check", "preconditions": [{ "var": "evidence.signalVerified" }], "effectOps": [{ "op": "set", "path": "choice.shared", "value": true }], "costs": [], "counteractionId": "request-confirmation", "decisionCueId": "CUE-OPEN-02", "publicEcho": "The check is shared." }]
+        },
+        {
+          "sceneId": "SCENE-03",
+          "actions": [{ "actionId": "publish-joint", "seat": "mara", "label": "Publish jointly", "preconditions": [{ "var": "derived.ready" }], "effectOps": [{ "op": "increment", "path": "relationship.trust", "value": 1 }], "costs": [], "counteractionId": "hold-window", "decisionCueId": "CUE-OPEN-03", "publicEcho": "The response names its evidence boundary." }]
+        }
+      ]
+    },
+    {
+      "recipeId": "RECIPE-CAUTIOUS",
+      "title": "Cautious verification",
+      "decisionCueIds": ["CUE-CAUTIOUS-01", "CUE-CAUTIOUS-02", "CUE-CAUTIOUS-03"],
+      "strategyOptions": [{ "strategyId": "CAUTIOUS-HOLD", "path": ["RECIPE-CAUTIOUS:SCENE-01:orin:preserve-copy", "RECIPE-CAUTIOUS:SCENE-02:orin:request-confirmation", "RECIPE-CAUTIOUS:SCENE-03:orin:hold-window"] }],
+      "stageOverrides": [
+        {
+          "sceneId": "SCENE-01",
+          "actions": [{ "actionId": "preserve-copy", "seat": "orin", "label": "Preserve a copy", "preconditions": [], "effectOps": [{ "op": "increment", "path": "relationship.trust", "value": 1 }], "costs": [], "counteractionId": "open-ledger", "decisionCueId": "CUE-CAUTIOUS-01", "publicEcho": "A verification copy is preserved." }]
+        },
+        {
+          "sceneId": "SCENE-02",
+          "actions": [{ "actionId": "request-confirmation", "seat": "orin", "label": "Request confirmation", "preconditions": [], "effectOps": [{ "op": "decrement", "path": "resources.time", "value": 1 }], "costs": [{ "op": "decrement", "path": "resources.time", "value": 1 }], "counteractionId": "joint-check", "decisionCueId": "CUE-CAUTIOUS-02", "publicEcho": "The response waits for one more check." }]
+        },
+        {
+          "sceneId": "SCENE-03",
+          "actions": [{ "actionId": "hold-window", "seat": "orin", "label": "Hold the window", "preconditions": [], "effectOps": [{ "op": "set", "path": "world.phase", "value": "settled" }], "costs": [], "counteractionId": "publish-joint", "decisionCueId": "CUE-CAUTIOUS-03", "publicEcho": "The response is held with a recorded reason." }]
+        }
+      ]
+    }
+  ],
+  "settlement": {
+    "rules": [
+      {
+        "endingCode": "ENDING-TRUSTED-RESCUE",
+        "title": "Trusted rescue",
+        "priority": 100,
+        "predicate": { "and": [{ "var": "derived.ready" }, { "var": "derived.trusted" }] },
+        "reasonCodes": ["READY_AND_TRUSTED"]
+      },
+      {
+        "endingCode": "ENDING-QUALIFIED-RESCUE",
+        "title": "Qualified rescue",
+        "priority": 80,
+        "predicate": { "var": "derived.ready" },
+        "reasonCodes": ["READY_WITHOUT_TRUST"]
+      },
+      {
+        "endingCode": "ENDING-HOLD",
+        "title": "Recorded hold",
+        "priority": 0,
+        "predicate": true,
+        "reasonCodes": ["NOT_READY"]
+      }
+    ],
+    "testVectors": [
+      {
+        "vectorId": "VECTOR-TRUSTED",
+        "state": { "world": { "phase": "settled" }, "evidence": { "signalVerified": true }, "relationship": { "trust": 2 }, "resources": { "time": 1 }, "choice": { "shared": true } },
+        "expectedEndingCode": "ENDING-TRUSTED-RESCUE"
+      },
+      {
+        "vectorId": "VECTOR-QUALIFIED",
+        "state": { "world": { "phase": "settled" }, "evidence": { "signalVerified": true }, "relationship": { "trust": 0 }, "resources": { "time": 1 }, "choice": { "shared": true } },
+        "expectedEndingCode": "ENDING-QUALIFIED-RESCUE"
+      },
+      {
+        "vectorId": "VECTOR-HOLD",
+        "state": { "world": { "phase": "settled" }, "evidence": { "signalVerified": false }, "relationship": { "trust": 1 }, "resources": { "time": 0 }, "choice": { "shared": false } },
+        "expectedEndingCode": "ENDING-HOLD"
+      }
+    ],
+    "projectionContract": {
+      "fragments": ["response", "evidence", "relationship"]
+    }
+  },
+  "agents": {
+    "contracts": [
+      {
+        "agentId": "CHAR-ORIN",
+        "role": "Evidence-bound harbor adviser",
+        "goal": "Help the player choose an executable response without overstating evidence.",
+        "knowledgeFactIds": ["FACT-SIGNAL", "FACT-MATCH", "FACT-WINDOW"],
+        "refusalBoundary": ["Do not invent a ledger match."],
+        "toolAllowlist": ["readVisibleFacts", "proposeTypedAction"],
+        "actionAllowlist": ["qualify-match", "record-boundary", "hold-with-reason", "preserve-copy", "request-confirmation", "hold-window"],
+        "memoryAccess": { "readScopes": ["current-run", "accepted-relationship-summary"], "writeMode": "candidate-only" },
+        "responseSchema": ["visibleFact", "missingEvidence", "risk", "nextActionId"]
+      }
+    ]
+  },
+  "runtime": {
+    "runtimeOwner": "uyi",
+    "relationshipOwner": "brain-mesh",
+    "operations": ["loadPackage", "getSceneView", "listActions", "resolveIntent", "submitAction", "reduceWorldState", "settle", "pause", "resume", "verifyVersion"],
+    "eventContracts": {
+      "WorldEvent": { "required": ["eventId", "runId", "sceneId", "actionInstanceId", "stateBeforeHash", "stateAfterHash"] },
+      "RelationshipEventCandidate": { "required": ["eventId", "userId", "characterId", "evidenceRefs", "proposedDelta", "consentScope"] },
+      "ContentFeedback": { "required": ["feedbackId", "packageVersion", "sceneId", "category", "evidenceRefs"] }
+    }
+  },
+  "productionHandoff": {
+    "materialOwner": "downstream-material-team",
+    "assetSlots": [
+      {
+        "assetSlotId": "ASSET-SIGNAL-ARRIVAL",
+        "sceneId": "SCENE-01",
+        "beatId": "BEAT-01",
+        "semanticPurpose": "Show the damaged rescue signal arriving during the storm.",
+        "requiredCharacters": ["CHAR-MARA", "CHAR-ORIN"],
+        "continuityRefs": ["LOC-HARBOR-OFFICE", "WEATHER-STORM"],
+        "runtimeCue": "signal_received",
+        "fallbackPolicy": "text-and-character-portrait",
+        "constraints": { "mustPreserve": ["storm", "damaged signal"] }
+      }
+    ]
+  },
+  "review": {
+    "status": "approved",
+    "entries": [
+      {
+        "reviewId": "REVIEW-001",
+        "stage": "source-events",
+        "status": "accepted",
+        "reviewer": "fixture-author",
+        "contentHash": "fixture-review-hash",
+        "reviewedAt": "2026-07-18T00:00:00.000Z"
+      }
+    ]
+  },
+  "auditProfile": {
+    "level": "compile",
+    "minimumChangedScenes": 3,
+    "minimumActionGraphDistance": 0.3,
+    "maximumDecisionCueReuse": 0.4
+  }
+}

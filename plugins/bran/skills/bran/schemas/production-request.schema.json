@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/production-request.schema.json",
+  "title": "Bran Production Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "packageVersion", "authority", "assetSlots"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "1.0.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "packageVersion": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "required": ["narrativeOwner", "materialOwner", "rule"],
+      "properties": {
+        "narrativeOwner": { "const": "bran" },
+        "materialOwner": { "type": "string", "minLength": 1 },
+        "rule": { "const": "Material production may fill asset references but cannot mutate narrative world state or settlement." }
+      }
+    },
+    "assetSlots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetSlotId",
+          "sceneId",
+          "semanticPurpose",
+          "requiredCharacters",
+          "continuityRefs",
+          "runtimeCue",
+          "fallbackPolicy"
+        ],
+        "properties": {
+          "assetSlotId": { "type": "string", "minLength": 1 },
+          "sceneId": { "type": "string", "minLength": 1 },
+          "beatId": { "type": "string" },
+          "semanticPurpose": { "type": "string", "minLength": 1 },
+          "requiredCharacters": { "type": "array", "items": { "type": "string" } },
+          "continuityRefs": { "type": "array", "items": { "type": "string" } },
+          "runtimeCue": { "type": "string", "minLength": 1 },
+          "fallbackPolicy": { "type": "string", "minLength": 1 },
+          "constraints": { "type": "object" }
+        }
+      }
+    }
+  }
+}

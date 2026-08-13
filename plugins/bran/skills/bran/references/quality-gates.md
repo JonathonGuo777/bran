@@ -23,6 +23,27 @@ Use these defaults unless the user supplies stricter thresholds.
 | Draft and escrow integrity | Non-empty draft hash; signatures match; active escrow has same-revision signatures and a cost receipt |
 | Quality receipt freshness | Artifact hash matches current package |
 
+Apply these gates when a Hodor target is exported.
+
+| Hodor target gate | Default |
+| --- | --- |
+| Entry node | Exactly one resolved entry |
+| Node scripts | 100% non-empty and within the `o_script` contract |
+| Branch targets | 100% resolved |
+| State variables | 100% mapped to supported Hodor types and safe identifiers |
+| Conditions | 100% derived fields expanded and source paths resolved |
+| Effects | 100% operation/type compatible |
+| Reachability | Every node reachable from the entry |
+| Ending nodes | At least 2, with no outgoing edges |
+| Target freshness | Target hash matches current content and Bran artifact hash |
+| Import bindings | 100% of nodes, edges, variables, and scripts bound |
+| Hodor validation | `valid: true` with zero issues |
+| Source event grounding | Every accepted event has a resolved source span and causal references |
+| Derived state executability | Every derived field has a machine-readable expression |
+| Compile receipt freshness | Compiler artifact hash matches the current compiled package |
+| Runtime authority | Natural language resolves to a typed action before state mutation |
+| Production authority | Asset-slot fulfillment cannot mutate narrative world state or settlement |
+
 The settlement renderer must preserve independent truths. A failed broadcast does not imply failed protection. An authorization revocation invalidates dependent draft signatures. A draft revision invalidates signatures bound to an older hash.
 
 For human testing, use new players and seat-visible information. Track whether players can explain the crisis, their unique leverage, the cost of the current choice, and the next unlock. Machine novelty metrics support this test and do not replace it.

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/narrative-package.schema.json",
+  "title": "Bran Narrative Package Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packageVersion",
+    "projectId",
+    "title",
+    "language",
+    "lifecycle",
+    "runtimeTarget",
+    "sourceFiles",
+    "sceneOrder",
+    "artifactIndex",
+    "auditProfile"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "1.0.0" },
+    "packageVersion": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "language": { "type": "string", "minLength": 2 },
+    "lifecycle": { "enum": ["compiled", "reviewed", "release"] },
+    "runtimeTarget": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "entrySceneId": { "type": "string", "minLength": 1 },
+    "sourceFiles": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "sceneOrder": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "artifactIndex": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["artifactId", "path", "format", "responsibility"],
+        "properties": {
+          "artifactId": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "format": { "enum": ["json", "jsonl"] },
+          "responsibility": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "auditProfile": {
+      "type": "object",
+      "required": ["level", "minimumChangedScenes", "minimumActionGraphDistance"],
+      "properties": {
+        "level": { "enum": ["compile", "release"] },
+        "minimumChangedScenes": { "type": "integer", "minimum": 0 },
+        "minimumActionGraphDistance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maximumDecisionCueReuse": { "type": "number", "minimum": 0, "maximum": 1 },
+        "minimumEvidenceStatements": { "type": "integer", "minimum": 0 },
+        "minimumWaitingActions": { "type": "integer", "minimum": 0 },
+        "minimumAgentPassRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "minimumCarryoverClasses": { "type": "integer", "minimum": 0 },
+        "minimumRunsPerRecipe": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "lineage": { "type": "object" }
+  }
+}
