@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/bran-rewrite/extraction-ledger.schema.json",
+  "title": "Bran Rewrite Extraction Ledger",
+  "type": "object",
+  "required": ["schemaVersion", "sourceId", "sourceHash", "adapters", "scenes", "characters", "relationships", "events", "emotionNodes", "distinctiveExpressions"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "sourceId": { "type": "string" },
+    "sourceHash": { "type": "string" },
+    "adapters": { "type": "array", "items": { "type": "string" } },
+    "scenes": { "type": "array", "items": { "type": "object" } },
+    "characters": { "type": "array", "items": { "type": "object" } },
+    "relationships": { "type": "array", "items": { "type": "object" } },
+    "events": { "type": "array", "items": { "type": "object" } },
+    "emotionNodes": { "type": "array", "items": { "type": "object" } },
+    "distinctiveExpressions": { "type": "array", "items": { "type": "object" } },
+    "unresolved": { "type": "array", "items": { "type": "object" } }
+  }
+}

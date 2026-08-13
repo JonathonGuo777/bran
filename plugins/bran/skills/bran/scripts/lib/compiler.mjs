@@ -16,6 +16,32 @@ import { evaluateSettlement } from './expressions.mjs'
 import { buildReviewReceipt, normalizeInitialReview } from './review.mjs'
 
 const SCHEMA_BASE = 'https://github.com/JonathonGuo777/bran/schemas'
+const operationsByStateType = {
+  boolean: new Set(['set', 'toggle']),
+  integer: new Set(['set', 'increment', 'decrement']),
+  number: new Set(['set', 'increment', 'decrement']),
+  string: new Set(['set', 'append']),
+  array: new Set(['set', 'append', 'remove']),
+  inventory: new Set(['set', 'append', 'remove'])
+}
+
+const valueMatchesStateType = (value, type) => {
+  if (type === 'boolean') return typeof value === 'boolean'
+  if (type === 'integer') return Number.isInteger(value)
+  if (type === 'number') return typeof value === 'number' && Number.isFinite(value)
+  if (type === 'string') return typeof value === 'string'
+  if (type === 'array' || type === 'inventory') return Array.isArray(value)
+  return false
+}
+
+const operationValueMatches = (operation, type) => {
+  if (operation.op === 'toggle') return operation.value === undefined
+  if (operation.op === 'increment' || operation.op === 'decrement') return typeof operation.value === 'number' && Number.isFinite(operation.value)
+  if (operation.op === 'append' && type === 'string') return typeof operation.value === 'string'
+  if (operation.op === 'append' || operation.op === 'remove') return operation.value !== undefined
+  if (operation.op === 'set') return valueMatchesStateType(operation.value, type)
+  return false
+}
 
 const validateIdentifiers = (label, values, diagnostics) => {
   const missing = values.map((value, index) => value ? null : index).filter(value => value !== null)
@@ -48,7 +74,12 @@ const validateInput = bundle => {
   const characterIds = new Set(bundle.characters.map(item => item.characterId))
   const sceneIds = new Set(bundle.scenes.map(item => item.sceneId))
   const fieldPaths = new Set((bundle.stateModel.fields ?? []).map(item => item.path))
+  const fieldsByPath = new Map((bundle.stateModel.fields ?? []).map(item => [item.path, item]))
   const derivedPaths = new Set((bundle.stateModel.derivedFields ?? []).map(item => item.path))
+  const entrySceneId = bundle.project.entrySceneId ?? bundle.scenes[0]?.sceneId
+  if (!entrySceneId || !sceneIds.has(entrySceneId)) {
+    diagnostics.push(createDiagnostic('ENTRY_SCENE_UNRESOLVED', 'error', `Project entry scene ${entrySceneId ?? '<missing>'} does not exist.`))
+  }
 
   for (const [index, event] of bundle.sourceEvents.entries()) {
     if (!event.eventId || !Number.isInteger(event.order) || !event.title || !event.summary || !event.action || !event.result) {
@@ -79,8 +110,14 @@ const validateInput = bundle => {
   }
 
   for (const [index, field] of (bundle.stateModel.fields ?? []).entries()) {
-    if (!field.path || !field.type || !Array.isArray(field.writers) || field.writers.length === 0) {
+    if (!field.path || !field.type || !Object.hasOwn(field, 'defaultValue') || !Array.isArray(field.writers) || field.writers.length === 0) {
       diagnostics.push(createDiagnostic('STATE_FIELD_INCOMPLETE', 'error', 'State field needs path, type, defaultValue, and at least one authorized writer.', { path: `stateModel.fields[${index}]` }))
+    }
+    const allowedTypes = new Set(['boolean', 'integer', 'number', 'string', 'array', 'inventory'])
+    if (field.type && !allowedTypes.has(field.type)) {
+      diagnostics.push(createDiagnostic('STATE_FIELD_TYPE_UNSUPPORTED', 'error', `State field ${field.path} uses unsupported type ${field.type}.`))
+    } else if (Object.hasOwn(field, 'defaultValue') && !valueMatchesStateType(field.defaultValue, field.type)) {
+      diagnostics.push(createDiagnostic('STATE_FIELD_DEFAULT_INVALID', 'error', `State field ${field.path} default does not match ${field.type}.`))
     }
   }
   validateIdentifiers('state fields', (bundle.stateModel.fields ?? []).map(item => item.path), diagnostics)
@@ -103,6 +140,11 @@ const validateInput = bundle => {
     }
     if (!Array.isArray(scene.beats) || scene.beats.length === 0) diagnostics.push(createDiagnostic('SCENE_BEATS_MISSING', 'error', `Scene ${scene.sceneId} has no beats.`, { path: `scenes[${index}].beats` }))
     if (!Array.isArray(scene.actions) || scene.actions.length === 0) diagnostics.push(createDiagnostic('SCENE_ACTIONS_MISSING', 'error', `Scene ${scene.sceneId} has no executable actions.`, { path: `scenes[${index}].actions` }))
+    if (scene.productionScript !== undefined) {
+      if (!scene.productionScript?.name?.trim() || !scene.productionScript?.content?.trim()) {
+        diagnostics.push(createDiagnostic('SCENE_PRODUCTION_SCRIPT_INCOMPLETE', 'error', `Scene ${scene.sceneId} productionScript needs name and content.`))
+      }
+    }
     for (const action of scene.actions ?? []) allActions.push({ ...action, sceneId: scene.sceneId, source: 'baseline' })
   }
   for (const recipe of bundle.recipes) {
@@ -121,14 +163,34 @@ const validateInput = bundle => {
     if (!Array.isArray(action.effectOps) || action.effectOps.length === 0) diagnostics.push(createDiagnostic('ACTION_EFFECTS_MISSING', 'error', `Action ${action.actionId} has no state effects.`))
     for (const operation of action.effectOps ?? []) {
       if (!fieldPaths.has(operation.path)) diagnostics.push(createDiagnostic('ACTION_STATE_PATH_UNREGISTERED', 'error', `Action ${action.actionId} writes unregistered path ${operation.path}.`))
+      else {
+        const field = fieldsByPath.get(operation.path)
+        if (!operationsByStateType[field.type]?.has(operation.op)) diagnostics.push(createDiagnostic('ACTION_STATE_OPERATION_UNSUPPORTED', 'error', `Action ${action.actionId} cannot use ${operation.op} on ${field.type} path ${operation.path}.`))
+        else if (!operationValueMatches(operation, field.type)) diagnostics.push(createDiagnostic('ACTION_STATE_VALUE_INVALID', 'error', `Action ${action.actionId} provides an invalid ${operation.op} value for ${field.type} path ${operation.path}.`))
+      }
     }
     for (const operation of action.costs ?? []) {
       if (!fieldPaths.has(operation.path)) diagnostics.push(createDiagnostic('ACTION_COST_PATH_UNREGISTERED', 'error', `Action ${action.actionId} charges unregistered path ${operation.path}.`))
+      else {
+        const field = fieldsByPath.get(operation.path)
+        if (!operationsByStateType[field.type]?.has(operation.op)) diagnostics.push(createDiagnostic('ACTION_COST_OPERATION_UNSUPPORTED', 'error', `Action ${action.actionId} cannot charge ${operation.op} on ${field.type} path ${operation.path}.`))
+        else if (!operationValueMatches(operation, field.type)) diagnostics.push(createDiagnostic('ACTION_COST_VALUE_INVALID', 'error', `Action ${action.actionId} provides an invalid ${operation.op} cost for ${field.type} path ${operation.path}.`))
+      }
     }
     for (const condition of action.preconditions ?? []) {
       for (const conditionPath of collectConditionPaths(condition)) {
         if (!fieldPaths.has(conditionPath) && !derivedPaths.has(conditionPath)) diagnostics.push(createDiagnostic('ACTION_CONDITION_PATH_UNREGISTERED', 'error', `Action ${action.actionId} reads unregistered path ${conditionPath}.`))
       }
+    }
+    const scene = bundle.scenes.find(item => item.sceneId === action.sceneId)
+    if (action.targetSceneId && !sceneIds.has(action.targetSceneId)) {
+      diagnostics.push(createDiagnostic('ACTION_TARGET_UNRESOLVED', 'error', `Action ${action.actionId} targets unknown scene ${action.targetSceneId}.`))
+    }
+    if (action.targetSceneId && scene && !(scene.nextSceneIds ?? []).includes(action.targetSceneId)) {
+      diagnostics.push(createDiagnostic('ACTION_TARGET_NOT_DECLARED', 'error', `Action ${action.actionId} targets ${action.targetSceneId}, which is not declared in ${scene.sceneId}.nextSceneIds.`))
+    }
+    if (!action.targetSceneId && (scene?.nextSceneIds ?? []).length > 1) {
+      diagnostics.push(createDiagnostic('ACTION_TARGET_REQUIRED', 'error', `Action ${action.actionId} needs targetSceneId because scene ${scene.sceneId} has multiple next scenes.`))
     }
     if (action.counteractionId && !actionReferenceIds.has(action.counteractionId)) diagnostics.push(createDiagnostic('COUNTERACTION_UNRESOLVED', 'error', `Action ${action.actionId} references unknown counteraction ${action.counteractionId}.`))
   }
@@ -180,6 +242,20 @@ const validateInput = bundle => {
     const result = evaluateSettlement(vector.state, { rules: bundle.settlement.rules }, bundle.stateModel, vectorDiagnostics)
     diagnostics.push(...vectorDiagnostics.map(item => ({ ...item, path: `settlement.testVectors.${vector.vectorId}${item.path ? `.${item.path}` : ''}` })))
     if (result.endingCode !== vector.expectedEndingCode) diagnostics.push(createDiagnostic('SETTLEMENT_VECTOR_FAILED', 'error', `Vector ${vector.vectorId} expected ${vector.expectedEndingCode} but derived ${result.endingCode}.`))
+  }
+
+  if (entrySceneId && sceneIds.has(entrySceneId)) {
+    const reachable = new Set()
+    const queue = [entrySceneId]
+    while (queue.length) {
+      const current = queue.shift()
+      if (reachable.has(current)) continue
+      reachable.add(current)
+      const scene = bundle.scenes.find(item => item.sceneId === current)
+      for (const nextSceneId of scene?.nextSceneIds ?? []) if (!reachable.has(nextSceneId)) queue.push(nextSceneId)
+    }
+    const unreachable = [...sceneIds].filter(sceneId => !reachable.has(sceneId))
+    if (unreachable.length) diagnostics.push(createDiagnostic('SCENE_UNREACHABLE', 'error', 'Scenes are unreachable from the project entry scene.', { evidence: unreachable }))
   }
 
   return diagnostics
@@ -264,6 +340,7 @@ export const compileBundle = ({ inputPath, outputRoot }) => {
     runtimeTarget: project.runtimeTarget,
     description: project.description ?? '',
     sourceFiles: bundle.sources,
+    entrySceneId: project.entrySceneId ?? sceneOrder[0],
     sceneOrder,
     artifactIndex: artifacts,
     auditProfile,
@@ -276,6 +353,7 @@ export const compileBundle = ({ inputPath, outputRoot }) => {
   writeJsonl(path.join(packageDir, 'scene-scripts.jsonl'), scenes)
   writeJson(path.join(packageDir, 'narrative-graph.json'), {
     schemaVersion: '1.0.0',
+    entrySceneId: project.entrySceneId ?? sceneOrder[0],
     sceneOrder,
     nodes: scenes.map(scene => ({ sceneId: scene.sceneId, eventIds: scene.eventIds ?? [], nextSceneIds: scene.nextSceneIds ?? [] }))
   })
@@ -345,7 +423,7 @@ export const compileBundle = ({ inputPath, outputRoot }) => {
   const receipt = {
     schemaVersion: '1.0.0',
     compiler: 'bran-core',
-    compilerVersion: '0.2.0',
+    compilerVersion: '0.3.0',
     projectId: project.projectId,
     packageVersion: project.packageVersion,
     inputHash: sha256(bundle),

@@ -22,6 +22,22 @@ Use these defaults unless the user supplies stricter thresholds.
 | Ending reachability | Every declared target equals the reducer result; package covers all intended ending classes |
 | Draft and escrow integrity | Non-empty draft hash; signatures match; active escrow has same-revision signatures and a cost receipt |
 | Quality receipt freshness | Artifact hash matches current package |
+
+Apply these gates when a Hodor target is exported.
+
+| Hodor target gate | Default |
+| --- | --- |
+| Entry node | Exactly one resolved entry |
+| Node scripts | 100% non-empty and within the `o_script` contract |
+| Branch targets | 100% resolved |
+| State variables | 100% mapped to supported Hodor types and safe identifiers |
+| Conditions | 100% derived fields expanded and source paths resolved |
+| Effects | 100% operation/type compatible |
+| Reachability | Every node reachable from the entry |
+| Ending nodes | At least 2, with no outgoing edges |
+| Target freshness | Target hash matches current content and Bran artifact hash |
+| Import bindings | 100% of nodes, edges, variables, and scripts bound |
+| Hodor validation | `valid: true` with zero issues |
 | Source event grounding | Every accepted event has a resolved source span and causal references |
 | Derived state executability | Every derived field has a machine-readable expression |
 | Compile receipt freshness | Compiler artifact hash matches the current compiled package |

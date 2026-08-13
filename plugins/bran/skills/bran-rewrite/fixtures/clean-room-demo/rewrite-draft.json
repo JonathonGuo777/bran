@@ -1,0 +1,636 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "projectId": "mercy-clause",
+    "title": "The Mercy Clause",
+    "language": "en",
+    "packageVersion": "0.1.0",
+    "runtimeTarget": "hodor-interactive",
+    "hodorProjectId": 1785137013680,
+    "climaxSceneId": "SCENE-004",
+    "endingSceneId": "SCENE-005"
+  },
+  "world": {
+    "premise": "During a hospital merger, an emergency physician discovers that an automated charity-care policy is quietly excluding the patients it was designed to protect.",
+    "rules": [
+      "Every emergency admission receives a machine-generated eligibility score.",
+      "The merger vote can be paused only by an on-record patient-safety finding.",
+      "A physician who accesses sealed billing data risks immediate suspension."
+    ],
+    "settings": [
+      {
+        "locationId": "LOC-TRIAGE",
+        "name": "Night triage unit",
+        "dramaticUse": "Pressure without privacy"
+      },
+      {
+        "locationId": "LOC-DATA-LAB",
+        "name": "Clinical data lab",
+        "dramaticUse": "Evidence changes relationship leverage"
+      },
+      {
+        "locationId": "LOC-MERGER-HEARING",
+        "name": "Public merger hearing",
+        "dramaticUse": "Institutional ritual becomes confrontation"
+      }
+    ]
+  },
+  "characters": [
+    {
+      "characterId": "CHAR-ROWAN",
+      "displayName": "Rowan Hale",
+      "role": "protagonist and emergency physician",
+      "want": "Keep her department open through the merger.",
+      "need": "Define patient safety without waiting for institutional permission.",
+      "fear": "Being dismissed as emotionally compromised.",
+      "flaw": "She treats private competence as sufficient proof.",
+      "voice": "Economical, observant, and exact under pressure.",
+      "arc": "She moves from protecting her professional standing to making the institution answer publicly.",
+      "oocBoundaries": ["She does not fabricate patient evidence."]
+    },
+    {
+      "characterId": "CHAR-JULIAN",
+      "displayName": "Julian Cross",
+      "role": "merger architect and former partner",
+      "want": "Complete the merger without reopening the charity-care model.",
+      "need": "Accept that private reassurance cannot substitute for accountable policy.",
+      "fear": "Losing the system he believes only he can stabilize.",
+      "flaw": "He converts affection into a demand for discretion.",
+      "voice": "Warm, controlled, and strategically incomplete.",
+      "arc": "His claim to benevolent control collapses when the consequences become public.",
+      "oocBoundaries": ["He does not confess without documentary pressure."]
+    },
+    {
+      "characterId": "CHAR-AMINA",
+      "displayName": "Amina Shaw",
+      "role": "resident and skeptical witness",
+      "want": "Protect patients without ending her career.",
+      "need": "Turn observation into accountable testimony.",
+      "fear": "Retaliation that will follow her through training.",
+      "flaw": "She waits for senior people to name the risk first.",
+      "voice": "Fast, clinical, and increasingly direct.",
+      "arc": "She moves from anonymous concern to signed testimony.",
+      "oocBoundaries": ["She does not expose patient identities."]
+    },
+    {
+      "characterId": "CHAR-LEON",
+      "displayName": "Leon Mercer",
+      "role": "board counsel and procedural gatekeeper",
+      "want": "Close the vote without creating discoverable liability.",
+      "need": "Recognize that procedure can preserve harm.",
+      "fear": "An uncontrolled public record.",
+      "flaw": "He equates legal defensibility with safety.",
+      "voice": "Formal, narrow, and visibly unsettled by facts.",
+      "arc": "He becomes the procedural witness who cannot erase the record.",
+      "oocBoundaries": ["He does not offer medical conclusions."]
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipId": "REL-ROWAN-JULIAN",
+      "fromCharacterId": "CHAR-ROWAN",
+      "toCharacterId": "CHAR-JULIAN",
+      "pressure": "Old intimacy gives Julian access to Rowan's need for professional legitimacy.",
+      "visibleChange": "Rowan refuses a private departmental guarantee and addresses him through the hearing record."
+    },
+    {
+      "relationshipId": "REL-ROWAN-AMINA",
+      "fromCharacterId": "CHAR-ROWAN",
+      "toCharacterId": "CHAR-AMINA",
+      "pressure": "Amina needs protection while Rowan needs evidence only Amina observed.",
+      "visibleChange": "They replace unspoken loyalty with explicit shared responsibility."
+    },
+    {
+      "relationshipId": "REL-ROWAN-LEON",
+      "fromCharacterId": "CHAR-ROWAN",
+      "toCharacterId": "CHAR-LEON",
+      "pressure": "Leon controls procedure while Rowan controls the clinical interpretation.",
+      "visibleChange": "Leon is forced to enter her safety finding into the permanent record."
+    }
+  ],
+  "causalChain": [
+    {
+      "linkId": "CAUSE-001",
+      "causeSceneId": "SCENE-001",
+      "effectSceneId": "SCENE-002",
+      "rationale": "A rejected patient creates a discrepancy that can be tested against the eligibility model."
+    },
+    {
+      "linkId": "CAUSE-002",
+      "causeSceneId": "SCENE-002",
+      "effectSceneId": "SCENE-003",
+      "rationale": "The model discrepancy gives Julian enough exposure to offer Rowan a private departmental guarantee."
+    },
+    {
+      "linkId": "CAUSE-003",
+      "causeSceneId": "SCENE-003",
+      "effectSceneId": "SCENE-004",
+      "rationale": "Rowan's refusal and Amina's signed testimony create the legal basis to interrupt the hearing."
+    },
+    {
+      "linkId": "CAUSE-004",
+      "causeSceneId": "SCENE-004",
+      "effectSceneId": "SCENE-005",
+      "rationale": "The public safety finding pauses the merger and transfers policy review to a patient-led panel."
+    }
+  ],
+  "scenes": [
+    {
+      "sceneId": "SCENE-001",
+      "title": "The Rejected Admission",
+      "locationId": "LOC-TRIAGE",
+      "summary": "Rowan treats a deteriorating patient whose charity-care admission has been rejected by the new scoring model.",
+      "emotionalFunctionId": "REWARD-AGENCY",
+      "beats": [
+        {
+          "beatId": "BEAT-001",
+          "kind": "action",
+          "text": "Rowan overrides the discharge timer long enough to stabilize the patient."
+        },
+        {
+          "beatId": "BEAT-002",
+          "kind": "dialogue",
+          "speakerId": "CHAR-AMINA",
+          "text": "The score changed after I entered her interpreter request."
+        },
+        {
+          "beatId": "BEAT-003",
+          "kind": "dialogue",
+          "speakerId": "CHAR-ROWAN",
+          "text": "Save the screen. Do not copy the patient's name."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-002",
+      "title": "The Hidden Variable",
+      "locationId": "LOC-DATA-LAB",
+      "summary": "Rowan and Amina prove that accessibility requests are acting as a hidden penalty in the eligibility score.",
+      "emotionalFunctionId": "MECH-EVIDENCE-LADDER",
+      "beats": [
+        {
+          "beatId": "BEAT-004",
+          "kind": "action",
+          "text": "Amina reproduces the score with synthetic patient records."
+        },
+        {
+          "beatId": "BEAT-005",
+          "kind": "dialogue",
+          "speakerId": "CHAR-ROWAN",
+          "text": "The model is charging people for the help they need to understand us."
+        },
+        {
+          "beatId": "BEAT-006",
+          "kind": "action",
+          "text": "Julian sees the test log through the glass wall and locks the billing dataset."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-003",
+      "title": "A Private Guarantee",
+      "locationId": "LOC-DATA-LAB",
+      "summary": "Julian promises to preserve Rowan's department if she waits until after the merger to challenge the model.",
+      "emotionalFunctionId": "REWARD-BETRAYAL",
+      "beats": [
+        {
+          "beatId": "BEAT-007",
+          "kind": "dialogue",
+          "speakerId": "CHAR-JULIAN",
+          "text": "Give me one week, and your unit survives with your name on the door."
+        },
+        {
+          "beatId": "BEAT-008",
+          "kind": "dialogue",
+          "speakerId": "CHAR-ROWAN",
+          "text": "You kept my department as the price of my silence."
+        },
+        {
+          "beatId": "BEAT-009",
+          "kind": "action",
+          "text": "Rowan declines the guarantee while Amina signs the test log as a witness."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-004",
+      "title": "The Safety Finding",
+      "locationId": "LOC-MERGER-HEARING",
+      "summary": "Rowan interrupts the merger vote with a reproducible test and demands an on-record patient-safety finding.",
+      "emotionalFunctionId": "MECH-PUBLIC-REVERSAL",
+      "beats": [
+        {
+          "beatId": "BEAT-010",
+          "kind": "action",
+          "text": "Leon attempts to classify the result as a billing dispute."
+        },
+        {
+          "beatId": "BEAT-011",
+          "kind": "dialogue",
+          "speakerId": "CHAR-ROWAN",
+          "text": "Call it billing after you explain why asking for an interpreter changes a medical door from open to closed."
+        },
+        {
+          "beatId": "BEAT-012",
+          "kind": "action",
+          "text": "Amina repeats the test live, and Leon enters the safety finding into the record."
+        }
+      ]
+    },
+    {
+      "sceneId": "SCENE-005",
+      "title": "Terms of Care",
+      "locationId": "LOC-TRIAGE",
+      "summary": "With the merger paused, Rowan gives up sole control of her department to build a patient-led review panel.",
+      "emotionalFunctionId": "REWARD-RECOGNITION",
+      "beats": [
+        {
+          "beatId": "BEAT-013",
+          "kind": "action",
+          "text": "The rejected patient returns for follow-up through a temporary human review process."
+        },
+        {
+          "beatId": "BEAT-014",
+          "kind": "dialogue",
+          "speakerId": "CHAR-AMINA",
+          "text": "They offered you the chair."
+        },
+        {
+          "beatId": "BEAT-015",
+          "kind": "dialogue",
+          "speakerId": "CHAR-ROWAN",
+          "text": "One chair created this problem. We are building a table."
+        }
+      ]
+    }
+  ],
+  "interactiveDesign": {
+    "entrySceneId": "SCENE-001",
+    "stateModel": {
+      "fields": [
+        {
+          "path": "evidence.clueCount",
+          "type": "integer",
+          "defaultValue": 0,
+          "writers": ["action", "reducer"],
+          "label": "Verified clues",
+          "description": "Evidence that can support an on-record safety finding."
+        },
+        {
+          "path": "relationship.trust",
+          "type": "integer",
+          "defaultValue": 0,
+          "writers": ["action", "reducer"],
+          "label": "Witness trust",
+          "description": "The degree to which Rowan and Amina can act publicly together."
+        },
+        {
+          "path": "risk.exposure",
+          "type": "integer",
+          "defaultValue": 0,
+          "writers": ["action", "reducer"],
+          "label": "Exposure risk",
+          "description": "Professional and patient-safety risk accumulated by the investigation."
+        },
+        {
+          "path": "story.completed",
+          "type": "boolean",
+          "defaultValue": false,
+          "writers": ["action", "reducer"],
+          "label": "Story completed",
+          "description": "Whether the final governance choice has been made."
+        }
+      ],
+      "derivedFields": [
+        {
+          "path": "derived.publicCase",
+          "expression": {
+            ">=": [
+              { "var": "evidence.clueCount" },
+              2
+            ]
+          }
+        },
+        {
+          "path": "derived.trusted",
+          "expression": {
+            ">=": [
+              { "var": "relationship.trust" },
+              2
+            ]
+          }
+        }
+      ],
+      "invariants": [
+        "evidence.clueCount, relationship.trust, and risk.exposure remain non-negative"
+      ]
+    },
+    "choices": [
+      {
+        "actionId": "document-anomaly",
+        "sceneId": "SCENE-001",
+        "targetSceneId": "SCENE-002",
+        "seat": "CHAR-ROWAN",
+        "label": "Document the scoring anomaly before the screen resets",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "evidence.clueCount", "value": 1 },
+          { "op": "increment", "path": "risk.exposure", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "stabilize-first",
+        "decisionCueId": "CUE-ADMISSION-EVIDENCE",
+        "publicEcho": "Rowan preserves a de-identified record of the scoring anomaly."
+      },
+      {
+        "actionId": "stabilize-first",
+        "sceneId": "SCENE-001",
+        "targetSceneId": "SCENE-003",
+        "seat": "CHAR-ROWAN",
+        "label": "Stabilize the patient and ask Amina to remember the sequence",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "relationship.trust", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "document-anomaly",
+        "decisionCueId": "CUE-ADMISSION-TRUST",
+        "publicEcho": "Amina sees Rowan place immediate care ahead of documentary advantage."
+      },
+      {
+        "actionId": "reproduce-synthetic-test",
+        "sceneId": "SCENE-002",
+        "targetSceneId": "SCENE-003",
+        "seat": "CHAR-AMINA",
+        "label": "Reproduce the score with synthetic patient records",
+        "preconditions": [
+          {
+            ">=": [
+              { "var": "evidence.clueCount" },
+              1
+            ]
+          }
+        ],
+        "effectOps": [
+          { "op": "increment", "path": "evidence.clueCount", "value": 2 },
+          { "op": "increment", "path": "risk.exposure", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "request-controlled-audit",
+        "decisionCueId": "CUE-LAB-REPRODUCE",
+        "publicEcho": "Amina produces a repeatable test without exposing a patient identity."
+      },
+      {
+        "actionId": "request-controlled-audit",
+        "sceneId": "SCENE-002",
+        "targetSceneId": "SCENE-003",
+        "seat": "CHAR-AMINA",
+        "label": "Request a controlled audit before touching the locked dataset",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "relationship.trust", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "reproduce-synthetic-test",
+        "decisionCueId": "CUE-LAB-AUDIT",
+        "publicEcho": "Amina creates a procedural record while preserving the right to escalate."
+      },
+      {
+        "actionId": "reject-private-guarantee",
+        "sceneId": "SCENE-003",
+        "targetSceneId": "SCENE-004",
+        "seat": "CHAR-ROWAN",
+        "label": "Reject Julian's guarantee and ask Amina to sign the test log",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "relationship.trust", "value": 1 },
+          { "op": "increment", "path": "risk.exposure", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "accept-one-week-delay",
+        "decisionCueId": "CUE-GUARANTEE-REJECT",
+        "publicEcho": "The private bargain becomes a witnessed disagreement about public safety."
+      },
+      {
+        "actionId": "accept-one-week-delay",
+        "sceneId": "SCENE-003",
+        "targetSceneId": "SCENE-005",
+        "seat": "CHAR-ROWAN",
+        "label": "Accept one week, but require a written temporary review process",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "evidence.clueCount", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "reject-private-guarantee",
+        "decisionCueId": "CUE-GUARANTEE-DELAY",
+        "publicEcho": "Rowan converts a private promise into a limited written obligation."
+      },
+      {
+        "actionId": "present-live-test",
+        "sceneId": "SCENE-004",
+        "targetSceneId": "SCENE-005",
+        "seat": "CHAR-ROWAN",
+        "label": "Run the synthetic test live during the merger hearing",
+        "preconditions": [
+          { "var": "derived.publicCase" }
+        ],
+        "effectOps": [
+          { "op": "increment", "path": "evidence.clueCount", "value": 1 },
+          { "op": "increment", "path": "risk.exposure", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "submit-signed-memo",
+        "decisionCueId": "CUE-HEARING-LIVE",
+        "publicEcho": "The board must respond to a result it has watched occur."
+      },
+      {
+        "actionId": "submit-signed-memo",
+        "sceneId": "SCENE-004",
+        "targetSceneId": "SCENE-005",
+        "seat": "CHAR-AMINA",
+        "label": "Submit a signed memo and demand a recorded safety finding",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "increment", "path": "relationship.trust", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "present-live-test",
+        "decisionCueId": "CUE-HEARING-MEMO",
+        "publicEcho": "Amina places her name beside the evidence and forces a procedural answer."
+      },
+      {
+        "actionId": "build-shared-panel",
+        "sceneId": "SCENE-005",
+        "seat": "CHAR-ROWAN",
+        "label": "Build a patient-led review panel with shared authority",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "set", "path": "story.completed", "value": true },
+          { "op": "increment", "path": "relationship.trust", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "take-interim-chair",
+        "decisionCueId": "CUE-ENDING-PANEL",
+        "publicEcho": "Rowan turns individual authority into a shared review structure."
+      },
+      {
+        "actionId": "take-interim-chair",
+        "sceneId": "SCENE-005",
+        "seat": "CHAR-ROWAN",
+        "label": "Take the interim chair and repair the policy from inside",
+        "preconditions": [],
+        "effectOps": [
+          { "op": "set", "path": "story.completed", "value": true },
+          { "op": "increment", "path": "evidence.clueCount", "value": 1 }
+        ],
+        "costs": [],
+        "counteractionId": "build-shared-panel",
+        "decisionCueId": "CUE-ENDING-CHAIR",
+        "publicEcho": "Rowan accepts temporary control while leaving the governance question unresolved."
+      }
+    ],
+    "settlement": {
+      "rules": [
+        {
+          "endingCode": "ENDING-ACCOUNTABLE-PANEL",
+          "title": "The accountable table",
+          "priority": 100,
+          "predicate": {
+            "and": [
+              { "var": "story.completed" },
+              { "var": "derived.publicCase" },
+              { "var": "derived.trusted" }
+            ]
+          },
+          "reasonCodes": ["CASE_PUBLIC", "WITNESS_TRUSTED", "AUTHORITY_SHARED"]
+        },
+        {
+          "endingCode": "ENDING-EXPOSED-INTERVENTION",
+          "title": "An exposed intervention",
+          "priority": 80,
+          "predicate": {
+            "and": [
+              { "var": "story.completed" },
+              {
+                ">=": [
+                  { "var": "risk.exposure" },
+                  3
+                ]
+              }
+            ]
+          },
+          "reasonCodes": ["HIGH_EXPOSURE", "POLICY_INTERRUPTED"]
+        },
+        {
+          "endingCode": "ENDING-PRIVATE-REPAIR",
+          "title": "A private repair",
+          "priority": 0,
+          "predicate": true,
+          "reasonCodes": ["STORY_COMPLETE_WITHOUT_PUBLIC_ACCOUNTABILITY"]
+        }
+      ],
+      "testVectors": [
+        {
+          "vectorId": "VECTOR-ACCOUNTABLE-PANEL",
+          "state": {
+            "evidence": { "clueCount": 3 },
+            "relationship": { "trust": 3 },
+            "risk": { "exposure": 2 },
+            "story": { "completed": true }
+          },
+          "expectedEndingCode": "ENDING-ACCOUNTABLE-PANEL"
+        },
+        {
+          "vectorId": "VECTOR-EXPOSED",
+          "state": {
+            "evidence": { "clueCount": 2 },
+            "relationship": { "trust": 1 },
+            "risk": { "exposure": 3 },
+            "story": { "completed": true }
+          },
+          "expectedEndingCode": "ENDING-EXPOSED-INTERVENTION"
+        },
+        {
+          "vectorId": "VECTOR-PRIVATE-REPAIR",
+          "state": {
+            "evidence": { "clueCount": 1 },
+            "relationship": { "trust": 1 },
+            "risk": { "exposure": 1 },
+            "story": { "completed": true }
+          },
+          "expectedEndingCode": "ENDING-PRIVATE-REPAIR"
+        }
+      ],
+      "projectionContract": {
+        "fragments": ["evidence", "relationship", "risk", "governance"]
+      }
+    }
+  },
+  "sellingPointMapping": [
+    {
+      "dnaRef": "REWARD-AGENCY",
+      "scriptRefs": ["SCENE-001", "SCENE-004"]
+    },
+    {
+      "dnaRef": "REWARD-BETRAYAL",
+      "scriptRefs": ["SCENE-003", "REL-ROWAN-JULIAN"]
+    },
+    {
+      "dnaRef": "REWARD-RECOGNITION",
+      "scriptRefs": ["SCENE-005"]
+    },
+    {
+      "dnaRef": "MECH-EVIDENCE-LADDER",
+      "scriptRefs": ["SCENE-001", "SCENE-002", "SCENE-004"]
+    },
+    {
+      "dnaRef": "MECH-PRIVATE-BARGAIN",
+      "scriptRefs": ["SCENE-003"]
+    },
+    {
+      "dnaRef": "MECH-PUBLIC-REVERSAL",
+      "scriptRefs": ["SCENE-004"]
+    }
+  ],
+  "originality": {
+    "designChanges": [
+      {
+        "category": "character-system",
+        "description": "The new ensemble is organized around medicine, training authority, legal procedure, and merger governance."
+      },
+      {
+        "category": "relationship-topology",
+        "description": "The lead depends on a junior witness and a procedural opponent in addition to the intimate rival."
+      },
+      {
+        "category": "world",
+        "description": "The story takes place inside a hospital merger governed by clinical and legal rules."
+      },
+      {
+        "category": "causal-chain",
+        "description": "A scoring anomaly is reproduced, locked, bargained over, entered into a hearing, and converted into policy review."
+      },
+      {
+        "category": "key-events",
+        "description": "Admission override, synthetic test, testimony, safety finding, and panel formation are newly designed events."
+      },
+      {
+        "category": "reversals",
+        "description": "A departmental rescue offer becomes evidence that affection is being used to preserve institutional silence."
+      },
+      {
+        "category": "climax",
+        "description": "The climax turns a merger vote into a live reproducibility test governed by patient-safety procedure."
+      },
+      {
+        "category": "ending",
+        "description": "The lead gives up individual authority to establish shared patient oversight."
+      },
+      {
+        "category": "dialogue",
+        "description": "All dialogue is written for the new medical, legal, and relational context."
+      }
+    ]
+  }
+}

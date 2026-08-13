@@ -39,6 +39,32 @@ const RELEASE_FILES = [
   'settlement-test-receipt.json',
   'quality-receipt.json'
 ]
+const operationsByStateType = {
+  boolean: new Set(['set', 'toggle']),
+  integer: new Set(['set', 'increment', 'decrement']),
+  number: new Set(['set', 'increment', 'decrement']),
+  string: new Set(['set', 'append']),
+  array: new Set(['set', 'append', 'remove']),
+  inventory: new Set(['set', 'append', 'remove'])
+}
+
+const valueMatchesStateType = (value, type) => {
+  if (type === 'boolean') return typeof value === 'boolean'
+  if (type === 'integer') return Number.isInteger(value)
+  if (type === 'number') return typeof value === 'number' && Number.isFinite(value)
+  if (type === 'string') return typeof value === 'string'
+  if (type === 'array' || type === 'inventory') return Array.isArray(value)
+  return false
+}
+
+const operationValueMatches = (operation, type) => {
+  if (operation.op === 'toggle') return operation.value === undefined
+  if (operation.op === 'increment' || operation.op === 'decrement') return typeof operation.value === 'number' && Number.isFinite(operation.value)
+  if (operation.op === 'append' && type === 'string') return typeof operation.value === 'string'
+  if (operation.op === 'append' || operation.op === 'remove') return operation.value !== undefined
+  if (operation.op === 'set') return valueMatchesStateType(operation.value, type)
+  return false
+}
 
 const jaccardDistance = (left, right) => {
   const leftSet = new Set(left)
@@ -155,6 +181,7 @@ export const auditPackage = ({ root, level }) => {
   const factIds = new Set((canon.canonFacts ?? []).map(fact => fact.factId))
   const characterIds = new Set(characters.map(character => character.characterId))
   const registeredPaths = new Set((stateRegistry.fields ?? []).map(field => field.path))
+  const stateFieldsByPath = new Map((stateRegistry.fields ?? []).map(field => [field.path, field]))
   const derivedPaths = new Set((stateRegistry.derivedFields ?? []).map(field => field.path))
   const actionList = [...baseline, ...recipes.flatMap(recipe => (recipe.stageOverrides ?? []).flatMap(stage => stage.actions ?? []))]
 
@@ -187,6 +214,22 @@ export const auditPackage = ({ root, level }) => {
   }
   check('NARRATIVE_GRAPH_REFS', graphFailures.length === 0, graphFailures)
 
+  const graphNodes = graph?.nodes ?? scenes
+  const graphNodeById = new Map(graphNodes.map(node => [node.sceneId, node]))
+  const entrySceneId = graph?.entrySceneId ?? manifest.entrySceneId ?? sceneOrder[0]
+  const reachableScenes = new Set()
+  const sceneQueue = sceneIds.has(entrySceneId) ? [entrySceneId] : []
+  while (sceneQueue.length) {
+    const current = sceneQueue.shift()
+    if (reachableScenes.has(current)) continue
+    reachableScenes.add(current)
+    for (const nextSceneId of graphNodeById.get(current)?.nextSceneIds ?? []) {
+      if (!reachableScenes.has(nextSceneId)) sceneQueue.push(nextSceneId)
+    }
+  }
+  const unreachableScenes = [...sceneIds].filter(sceneId => !reachableScenes.has(sceneId))
+  check('NARRATIVE_GRAPH_REACHABILITY', sceneIds.has(entrySceneId) && unreachableScenes.length === 0, { entrySceneId, unreachableScenes })
+
   const actionPathFailures = actionList.flatMap(action => [
     ...(action.effectOps ?? []).filter(operation => !registeredPaths.has(operation.path)).map(operation => `${action.actionInstanceId}:write:${operation.path}`),
     ...(action.costs ?? []).filter(operation => !registeredPaths.has(operation.path)).map(operation => `${action.actionInstanceId}:cost:${operation.path}`),
@@ -194,10 +237,36 @@ export const auditPackage = ({ root, level }) => {
   ])
   check('STATE_PATHS_RECOMPUTED', actionPathFailures.length === 0, actionPathFailures)
 
+  const stateTypeFailures = (stateRegistry.fields ?? []).flatMap(field => {
+    const failures = []
+    if (!operationsByStateType[field.type]) failures.push(`${field.path}:type:${field.type}`)
+    else if (!valueMatchesStateType(field.defaultValue, field.type)) failures.push(`${field.path}:default`)
+    return failures
+  })
+  for (const action of actionList) {
+    for (const operation of [...(action.effectOps ?? []), ...(action.costs ?? [])]) {
+      const field = stateFieldsByPath.get(operation.path)
+      if (!field) continue
+      if (!operationsByStateType[field.type]?.has(operation.op)) stateTypeFailures.push(`${action.actionInstanceId}:${operation.path}:operation:${operation.op}`)
+      else if (!operationValueMatches(operation, field.type)) stateTypeFailures.push(`${action.actionInstanceId}:${operation.path}:value`)
+    }
+  }
+  check('STATE_TYPES_RECOMPUTED', stateTypeFailures.length === 0, stateTypeFailures)
+
   const actionReferenceIds = new Set(actionList.flatMap(action => [action.actionId, action.actionInstanceId]).filter(Boolean))
   const counteractionFailures = actionList.filter(action => action.counteractionId && !actionReferenceIds.has(action.counteractionId)).map(action => `${action.actionInstanceId}:${action.counteractionId}`)
   const strategyFailures = recipes.flatMap(recipe => (recipe.strategyOptions ?? []).flatMap(strategy => (strategy.path ?? []).filter(actionId => !actionReferenceIds.has(actionId)).map(actionId => `${strategy.strategyId}:${actionId}`)))
   check('ACTION_GRAPH_REFS_RECOMPUTED', counteractionFailures.length === 0 && strategyFailures.length === 0, { counteractionFailures, strategyFailures })
+
+  const actionTargetFailures = actionList.flatMap(action => {
+    const scene = graphNodeById.get(action.sceneId)
+    if (!scene) return [`${action.actionInstanceId}:scene:${action.sceneId}`]
+    if (action.targetSceneId && !sceneIds.has(action.targetSceneId)) return [`${action.actionInstanceId}:target:${action.targetSceneId}`]
+    if (action.targetSceneId && !(scene.nextSceneIds ?? []).includes(action.targetSceneId)) return [`${action.actionInstanceId}:undeclared:${action.targetSceneId}`]
+    if (!action.targetSceneId && (scene.nextSceneIds ?? []).length > 1) return [`${action.actionInstanceId}:target-required`]
+    return []
+  })
+  check('ACTION_TARGETS_RECOMPUTED', actionTargetFailures.length === 0, actionTargetFailures)
 
   const derivedFailures = (stateRegistry.derivedFields ?? []).filter(field => !field.path || !field.expression).map(field => field.path ?? '<missing-path>')
   check('DERIVED_FIELDS_EXECUTABLE', derivedFailures.length === 0, derivedFailures)

@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-Bran 是一个面向可复玩 AI 游戏的 Agent Skill 和零依赖 Node.js 编译器，用于构建和审计可执行的分支剧本包。
+Bran 由两个 Agent Skill 和一个零依赖 Node.js 编译器组成，用于 clean-room 剧本改写、可执行分支剧本编译和可复现叙事审计。
 
 它处理一种常见的生产问题：剧本在文档里看起来分支很多，玩家实际进入后仍会走向相同策略、相同支配选项，或者结局文案与最终世界状态互相矛盾。Bran 会把叙事意图转成带前置条件、状态效果、成本和反制的行动，再检查这些行动是否真的构成了不同玩法。
 
@@ -16,10 +16,28 @@ BranInputBundle：正典 + 角色 + 场景 + 世界规则
 bran compile -> NarrativePackage + RuntimeContract + ProductionRequest
       |
       v
+bran export-hodor -> 互动剧情节点、选择、变量、结局与绑定合同
+      |
+      v
 确定性结算器 -> 世界状态 -> 结算回执 -> 结局投影
 ```
 
 Bran 是 Hodor 的叙事编译层，负责原文 grounding、故事与交互结构、类型化行动、世界状态规则、角色 Agent 边界和确定性结算。下游素材团队接收语义化资产槽位，可以回填素材引用，但不能修改叙事状态和结局规则。
+
+`bran-rewrite` 是 Bran 的审核前子 skill。它接收具备权利依据的原稿，把证据保存在分析区，将抽象 Story DNA 封装为写作区可见的 clean-room 简报，接收独立设计的新剧本，并在 `awaiting-taste-review` 状态停止。
+
+```text
+PDF / DOCX / FDX / Fountain / Markdown / 小说原文
+        |
+        v
+兼容 ScriptBreak + LangExtract 的证据账本
+        |
+        v
+Story DNA -> clean-room 简报 -> 独立新剧本
+        |
+        v
+BranInputBundle -> Bran 编译与审计 -> 等待 Taste 审核
+```
 
 ## Bran 会检查什么
 
@@ -47,6 +65,7 @@ codex plugin marketplace add JonathonGuo777/bran
 
 ```text
 $skill-installer install https://github.com/JonathonGuo777/bran/tree/main/plugins/bran/skills/bran
+$skill-installer install https://github.com/JonathonGuo777/bran/tree/main/plugins/bran/skills/bran-rewrite
 ```
 
 直接安装 skill 后需要重启 Codex，使其重新发现本地技能。
@@ -57,11 +76,49 @@ $skill-installer install https://github.com/JonathonGuo777/bran/tree/main/plugin
 git clone https://github.com/JonathonGuo777/bran.git
 mkdir -p ~/.codex/skills
 cp -R bran/plugins/bran/skills/bran ~/.codex/skills/bran
+cp -R bran/plugins/bran/skills/bran-rewrite ~/.codex/skills/bran-rewrite
 ```
 
 Bran 遵循可移植的 `SKILL.md` 约定。其他兼容 Agent 也可以将 `plugins/bran/skills/bran` 放入自己的 skill 目录。
 
 ## 使用
+
+把改写链运行到人工 Taste 审核之前：
+
+```bash
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs ingest \
+  /absolute/path/to/source.fdx \
+  --out /absolute/path/to/rewrite-workspace \
+  --rights licensed \
+  --rights-basis "合同编号与允许的改编范围"
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs extract \
+  /absolute/path/to/rewrite-workspace \
+  --input /absolute/path/to/extraction-ledger.json
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs seal-dna \
+  /absolute/path/to/rewrite-workspace \
+  --input /absolute/path/to/story-dna.json
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs brief \
+  /absolute/path/to/rewrite-workspace
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs generate \
+  /absolute/path/to/rewrite-workspace \
+  --draft /absolute/path/to/rewrite-draft.json
+```
+
+粘贴板原文可以通过标准输入导入：
+
+```bash
+pbpaste | node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs ingest - \
+  --format text \
+  --out /absolute/path/to/rewrite-workspace \
+  --rights owned \
+  --rights-basis "公司自有原稿"
+```
+
+当权利状态为 `unknown` 或 `internal-research` 时，系统允许分析，阻断 clean-room 简报和剧本生成。机器相似度与来源检查只输出风险信号，不提供法律结论。
 
 给 Bran 明确的原文边界和目标剧本包：
 
@@ -88,6 +145,46 @@ node plugins/bran/skills/bran/scripts/bran.mjs audit \
   /tmp/harbor-signal-handoff \
   --level compile
 ```
+
+将通过编译审计的包导出为 Hodor 互动剧目标：
+
+```bash
+node plugins/bran/skills/bran/scripts/bran.mjs export-hodor \
+  /tmp/harbor-signal-handoff \
+  --project-id 1785137013680 \
+  --out /tmp/hodor-target.json
+```
+
+导出器会生成 Hodor 可接受的节点类型、节点剧本、画布位置、选择条件、变量效果、结算节点和至少两个结局。Hodor 完成写入后必须返回稳定 ID 绑定和图校验回执：
+
+```bash
+export HODOR_TOKEN="本地登录令牌"
+node plugins/bran/skills/bran/scripts/bran.mjs apply-hodor \
+  /tmp/hodor-target.json \
+  --base-url http://127.0.0.1:10588 \
+  --receipt /tmp/hodor-import-receipt.json
+
+node plugins/bran/skills/bran/scripts/bran.mjs verify-hodor \
+  /tmp/hodor-target.json \
+  --receipt /absolute/path/to/hodor-import-receipt.json
+```
+
+`apply-hodor` 每次写入后都会读取最新 revision，并持续保存节点、剧本、连线和变量绑定。中途失败后使用同一 target 和 receipt 可继续执行；遇到没有对应回执的非空画布会停止，防止重复建图。
+
+Bran 包更新后，使用 `diff-hodor` 和 `sync-hodor` 增量同步：
+
+```bash
+node plugins/bran/skills/bran/scripts/bran.mjs diff-hodor \
+  /tmp/hodor-target.json /tmp/hodor-target-v2.json
+
+node plugins/bran/skills/bran/scripts/bran.mjs sync-hodor \
+  /tmp/hodor-target.json /tmp/hodor-target-v2.json \
+  --base-receipt /tmp/hodor-import-receipt.json \
+  --base-url http://127.0.0.1:10588 \
+  --receipt /tmp/hodor-import-receipt-v2.json
+```
+
+同步器按稳定绑定创建、更新和删除图数据，并使用 Hodor revision 防止并发覆盖。画布已经打开时，命令执行成功后需要点击一次画布刷新按钮。
 
 为一个阶段记录绑定当前产物哈希的作者审核：
 
@@ -148,6 +245,8 @@ node plugins/bran/skills/bran/scripts/audit-package.mjs /absolute/path/to/upstre
 - `NarrativePackage`：供审计器和运行时接入使用的稳定中间表示。
 - `RuntimeContract`：定义类型化行动，以及 `WorldEvent`、`RelationshipEventCandidate`、`ContentFeedback` 事件信封。
 - `ProductionRequest`：只声明语义化资产槽位，不包含图片、视频、音频、模型或生成任务实现。
+- `HodorTarget`：把 Bran 场景、行动、状态和结算规则投影成 Hodor 画布合同。
+- `HodorImportReceipt`：绑定 Bran 稳定键与 Hodor 节点、连线、变量和 `o_script` ID。
 
 ## 产物契约
 
@@ -159,6 +258,7 @@ Bran 要求交接包包含版本与来源、正典事实和可见性分区、角
 - [`artifact-contract.md`](plugins/bran/skills/bran/references/artifact-contract.md)
 - [`quality-gates.md`](plugins/bran/skills/bran/references/quality-gates.md)
 - [`skill-adaptation.md`](plugins/bran/skills/bran/references/skill-adaptation.md)
+- [`hodor-target-contract.md`](plugins/bran/skills/bran/references/hodor-target-contract.md)
 
 ## 能力边界
 

@@ -1,16 +1,19 @@
 {
   "name": "bran-narrative-compiler",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Compile and audit executable branching-story packages.",
+  "description": "Rewrite, compile, and audit executable story packages.",
   "bin": {
-    "bran": "plugins/bran/skills/bran/scripts/bran.mjs"
+    "bran": "plugins/bran/skills/bran/scripts/bran.mjs",
+    "bran-rewrite": "plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs"
   },
   "scripts": {
-    "test": "node scripts/test-core.mjs",
+    "test": "node scripts/test-core.mjs && node scripts/test-rewrite.mjs",
+    "test:core": "node scripts/test-core.mjs",
+    "test:rewrite": "node scripts/test-rewrite.mjs",
     "validate": "node scripts/validate-repo.mjs",
-    "verify": "node scripts/validate-repo.mjs && node scripts/test-core.mjs"
+    "verify": "node scripts/validate-repo.mjs && npm test"
   },
   "engines": {
     "node": ">=22"

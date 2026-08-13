@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/hodor-interactive-story-target.schema.json",
+  "title": "Bran Hodor Interactive Story Target",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "target",
+    "targetHash",
+    "source",
+    "project",
+    "graph",
+    "entryNodeKey",
+    "variables",
+    "nodes",
+    "edges",
+    "downstreamContract"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "contractVersion": { "const": "1.0.0" },
+    "target": { "const": "hodor-interactive-story" },
+    "targetHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": {
+      "type": "object",
+      "required": ["branPackageVersion", "branProjectId", "branArtifactHash", "recipeId"],
+      "properties": {
+        "branPackageVersion": { "type": "string", "minLength": 1 },
+        "branProjectId": { "type": "string", "minLength": 1 },
+        "branArtifactHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "recipeId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": ["projectId", "title"],
+      "properties": {
+        "projectId": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "required": ["title", "status"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "status": { "enum": ["draft", "ready", "producing", "completed", "blocked"] }
+      }
+    },
+    "entryNodeKey": { "type": "string", "minLength": 1 },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["variableKey", "sourcePath", "name", "label", "type", "initialValue", "description"],
+        "properties": {
+          "variableKey": { "type": "string", "minLength": 1 },
+          "sourcePath": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "label": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "type": { "enum": ["boolean", "number", "string", "inventory"] },
+          "initialValue": {},
+          "description": { "type": "string", "maxLength": 4000 }
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "required": ["nodeKey", "kind", "title", "summary", "position", "status", "script"],
+        "properties": {
+          "nodeKey": { "type": "string", "minLength": 1 },
+          "sourceSceneId": { "type": "string" },
+          "sourceEndingCode": { "type": "string" },
+          "kind": { "enum": ["scene", "branch", "hub", "ending"] },
+          "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "summary": { "type": "string", "maxLength": 12000 },
+          "position": {
+            "type": "object",
+            "required": ["x", "y"],
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" }
+            }
+          },
+          "status": { "enum": ["draft", "ready", "producing", "completed", "blocked"] },
+          "script": {
+            "type": "object",
+            "required": ["name", "content"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "maxLength": 500 },
+              "content": { "type": "string", "maxLength": 2000000 }
+            }
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "edgeKey",
+          "sourceNodeKey",
+          "targetNodeKey",
+          "choiceText",
+          "condition",
+          "conditionAst",
+          "conditionPaths",
+          "effects",
+          "priority"
+        ],
+        "properties": {
+          "edgeKey": { "type": "string", "minLength": 1 },
+          "sourceNodeKey": { "type": "string", "minLength": 1 },
+          "targetNodeKey": { "type": "string", "minLength": 1 },
+          "choiceText": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "condition": { "type": ["string", "null"], "maxLength": 4000 },
+          "conditionAst": {},
+          "conditionPaths": { "type": "array", "items": { "type": "string" } },
+          "effects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["variable", "operation"],
+              "properties": {
+                "variable": { "type": "string", "minLength": 1 },
+                "operation": { "enum": ["set", "increment", "decrement", "toggle", "append", "remove"] },
+                "value": {}
+              }
+            }
+          },
+          "priority": { "type": "integer" },
+          "sourceActionInstanceId": { "type": "string" },
+          "sourceEndingCode": { "type": "string" }
+        }
+      }
+    },
+    "downstreamContract": { "type": "object" }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/bran-rewrite/story-dna.schema.json",
+  "title": "Bran Rewrite Story DNA",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "dnaId", "targetAudience", "audiencePromise", "genreEnvelope", "emotionalRewards", "characterFunctions", "relationshipFunctions", "narrativeMechanics", "pacing", "marketConstraints", "independentDesignTargets"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "dnaId": { "type": "string", "minLength": 1 },
+    "targetAudience": { "type": "string", "minLength": 1 },
+    "audiencePromise": { "type": "string", "minLength": 1 },
+    "genreEnvelope": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "themes": { "type": "array", "items": { "type": "string" } },
+    "emotionalRewards": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "characterFunctions": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "relationshipFunctions": { "type": "array", "items": { "type": "object" } },
+    "narrativeMechanics": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "pacing": { "type": "object" },
+    "marketConstraints": { "type": "object" },
+    "independentDesignTargets": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["character-system", "relationship-topology", "world", "causal-chain", "key-events", "reversals", "climax", "ending", "dialogue"]
+      }
+    }
+  }
+}

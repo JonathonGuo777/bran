@@ -13,11 +13,13 @@ const requireFile = relativePath => {
 const pluginPath = requireFile('plugins/bran/.codex-plugin/plugin.json')
 const marketplacePath = requireFile('.agents/plugins/marketplace.json')
 const skillPath = requireFile('plugins/bran/skills/bran/SKILL.md')
+const rewriteSkillPath = requireFile('plugins/bran/skills/bran-rewrite/SKILL.md')
 const packagePath = requireFile('package.json')
 
 for (const relativePath of [
   'plugins/bran/skills/bran/agents/openai.yaml',
   'plugins/bran/skills/bran/references/compiler-contract.md',
+  'plugins/bran/skills/bran/references/hodor-target-contract.md',
   'plugins/bran/skills/bran/references/artifact-contract.md',
   'plugins/bran/skills/bran/references/quality-gates.md',
   'plugins/bran/skills/bran/references/skill-adaptation.md',
@@ -28,6 +30,8 @@ for (const relativePath of [
   'plugins/bran/skills/bran/schemas/runtime-contract.schema.json',
   'plugins/bran/skills/bran/schemas/agent-runtime-contract.schema.json',
   'plugins/bran/skills/bran/schemas/review-receipt.schema.json',
+  'plugins/bran/skills/bran/schemas/hodor-interactive-story-target.schema.json',
+  'plugins/bran/skills/bran/schemas/hodor-import-receipt.schema.json',
   'plugins/bran/skills/bran/fixtures/harbor-signal/bran-input.json',
   'plugins/bran/skills/bran/scripts/bran.mjs',
   'plugins/bran/skills/bran/scripts/compile-package.mjs',
@@ -38,8 +42,25 @@ for (const relativePath of [
   'plugins/bran/skills/bran/scripts/lib/auditor.mjs',
   'plugins/bran/skills/bran/scripts/lib/review.mjs',
   'plugins/bran/skills/bran/scripts/lib/diff.mjs',
+  'plugins/bran/skills/bran/scripts/lib/hodor.mjs',
+  'plugins/bran/skills/bran-rewrite/agents/openai.yaml',
+  'plugins/bran/skills/bran-rewrite/references/rewrite-contract.md',
+  'plugins/bran/skills/bran-rewrite/schemas/source-record.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/extraction-ledger.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/story-dna.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/clean-room-brief.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/rewrite-draft.schema.json',
+  'plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs',
+  'plugins/bran/skills/bran-rewrite/scripts/lib/common.mjs',
+  'plugins/bran/skills/bran-rewrite/scripts/lib/source.mjs',
+  'plugins/bran/skills/bran-rewrite/scripts/lib/pipeline.mjs',
+  'plugins/bran/skills/bran-rewrite/fixtures/clean-room-demo/source.fountain',
+  'plugins/bran/skills/bran-rewrite/fixtures/clean-room-demo/story-dna.json',
+  'plugins/bran/skills/bran-rewrite/fixtures/clean-room-demo/rewrite-draft.json',
+  'plugins/bran/skills/bran-rewrite/LICENSE.txt',
   'plugins/bran/skills/bran/LICENSE.txt',
   'scripts/test-core.mjs',
+  'scripts/test-rewrite.mjs',
   'README.md',
   'README.zh-CN.md',
   'LICENSE'
@@ -61,6 +82,7 @@ if (plugin) {
   if (plugin.skills !== './skills/') failures.push('plugin skills path must be ./skills/')
   if (!/^\d+\.\d+\.\d+$/.test(plugin.version ?? '')) failures.push('plugin version must use semver')
   if (packageJson && plugin.version !== packageJson.version) failures.push('plugin and package versions must match')
+  if (packageJson?.bin?.['bran-rewrite'] !== 'plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs') failures.push('package bin must expose bran-rewrite')
 }
 
 for (const relativePath of [
@@ -71,7 +93,16 @@ for (const relativePath of [
   'plugins/bran/skills/bran/schemas/runtime-contract.schema.json',
   'plugins/bran/skills/bran/schemas/agent-runtime-contract.schema.json',
   'plugins/bran/skills/bran/schemas/review-receipt.schema.json',
-  'plugins/bran/skills/bran/fixtures/harbor-signal/bran-input.json'
+  'plugins/bran/skills/bran/schemas/hodor-interactive-story-target.schema.json',
+  'plugins/bran/skills/bran/schemas/hodor-import-receipt.schema.json',
+  'plugins/bran/skills/bran/fixtures/harbor-signal/bran-input.json',
+  'plugins/bran/skills/bran-rewrite/schemas/source-record.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/extraction-ledger.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/story-dna.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/clean-room-brief.schema.json',
+  'plugins/bran/skills/bran-rewrite/schemas/rewrite-draft.schema.json',
+  'plugins/bran/skills/bran-rewrite/fixtures/clean-room-demo/story-dna.json',
+  'plugins/bran/skills/bran-rewrite/fixtures/clean-room-demo/rewrite-draft.json'
 ]) {
   try {
     JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'))
@@ -97,6 +128,14 @@ if (fs.existsSync(skillPath)) {
   const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/u)?.[1] ?? ''
   if (!/^name:\s*bran\s*$/mu.test(frontmatter)) failures.push('SKILL.md frontmatter name must be bran')
   if (!/^description:\s*\S.+$/mu.test(frontmatter)) failures.push('SKILL.md frontmatter needs a description')
+}
+
+if (fs.existsSync(rewriteSkillPath)) {
+  const skill = fs.readFileSync(rewriteSkillPath, 'utf8')
+  const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/u)?.[1] ?? ''
+  if (!/^name:\s*bran-rewrite\s*$/mu.test(frontmatter)) failures.push('bran-rewrite SKILL.md frontmatter name must be bran-rewrite')
+  if (!/^description:\s*\S.+$/mu.test(frontmatter)) failures.push('bran-rewrite SKILL.md frontmatter needs a description')
+  if (skill.includes('[TODO')) failures.push('bran-rewrite SKILL.md contains unfinished TODOs')
 }
 
 if (failures.length) {

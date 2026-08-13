@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/bran-rewrite/clean-room-brief.schema.json",
+  "title": "Bran Rewrite Clean-room Brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "briefId", "sourceDisclosure", "targetAudience", "audiencePromise", "genreEnvelope", "emotionalRewards", "characterFunctions", "relationshipFunctions", "narrativeMechanics", "pacing", "marketConstraints", "independentDesignTargets", "writerConstraints"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "briefId": { "type": "string" },
+    "sourceDisclosure": { "const": "abstract-only" },
+    "targetAudience": { "type": "string" },
+    "audiencePromise": { "type": "string" },
+    "genreEnvelope": { "type": "array", "items": { "type": "string" } },
+    "themes": { "type": "array", "items": { "type": "string" } },
+    "emotionalRewards": { "type": "array", "items": { "type": "object" } },
+    "characterFunctions": { "type": "array", "items": { "type": "object" } },
+    "relationshipFunctions": { "type": "array", "items": { "type": "object" } },
+    "narrativeMechanics": { "type": "array", "items": { "type": "object" } },
+    "pacing": { "type": "object" },
+    "marketConstraints": { "type": "object" },
+    "independentDesignTargets": { "type": "array", "items": { "type": "string" } },
+    "writerConstraints": { "type": "object" }
+  }
+}

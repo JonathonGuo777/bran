@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bran Rewrite"
+  short_description: "Extract story DNA and build clean-room rewrites"
+  default_prompt: "Use $bran-rewrite to turn this authorized source into an evidence-backed clean-room script draft."

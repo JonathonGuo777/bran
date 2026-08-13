@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/hodor-import-receipt.schema.json",
+  "title": "Hodor Interactive Story Import Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "status",
+    "targetHash",
+    "projectId",
+    "graphId",
+    "revision",
+    "nodeBindings",
+    "edgeBindings",
+    "variableBindings",
+    "validation",
+    "appliedAt"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "contractVersion": { "const": "1.0.0" },
+    "status": { "enum": ["applying", "validated", "failed"] },
+    "targetHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "projectId": { "type": "integer", "minimum": 1 },
+    "graphId": { "type": ["string", "null"], "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 0 },
+    "nodeBindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nodeKey", "nodeId", "scriptId"],
+        "properties": {
+          "nodeKey": { "type": "string", "minLength": 1 },
+          "nodeId": { "type": "string", "minLength": 1 },
+          "scriptId": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "edgeBindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edgeKey", "edgeId"],
+        "properties": {
+          "edgeKey": { "type": "string", "minLength": 1 },
+          "edgeId": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "variableBindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["variableKey", "variableId"],
+        "properties": {
+          "variableKey": { "type": "string", "minLength": 1 },
+          "variableId": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["valid", "issues"],
+      "properties": {
+        "valid": { "type": "boolean" },
+        "issues": { "type": "array" }
+      }
+    },
+    "appliedAt": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

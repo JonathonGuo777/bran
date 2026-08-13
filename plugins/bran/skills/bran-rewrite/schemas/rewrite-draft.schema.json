@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/bran-rewrite/rewrite-draft.schema.json",
+  "title": "Bran Rewrite Draft",
+  "type": "object",
+  "required": ["schemaVersion", "project", "world", "characters", "relationships", "causalChain", "scenes", "sellingPointMapping", "originality"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": { "type": "object" },
+    "world": { "type": "object" },
+    "characters": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "relationships": { "type": "array", "items": { "type": "object" } },
+    "causalChain": { "type": "array", "minItems": 2, "items": { "type": "object" } },
+    "scenes": { "type": "array", "minItems": 3, "items": { "type": "object" } },
+    "interactiveDesign": {
+      "type": "object",
+      "required": ["entrySceneId", "stateModel", "choices", "settlement"],
+      "properties": {
+        "entrySceneId": { "type": "string", "minLength": 1 },
+        "stateModel": {
+          "type": "object",
+          "required": ["fields", "derivedFields"],
+          "properties": {
+            "fields": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["path", "type", "defaultValue", "writers"],
+                "properties": {
+                  "path": { "type": "string", "minLength": 1 },
+                  "type": { "enum": ["boolean", "integer", "number", "string", "array", "inventory"] },
+                  "defaultValue": {},
+                  "writers": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+                  "label": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+              }
+            },
+            "derivedFields": { "type": "array", "items": { "type": "object" } },
+            "invariants": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["actionId", "sceneId", "seat", "label", "preconditions", "effectOps", "costs", "decisionCueId", "publicEcho"],
+            "properties": {
+              "actionId": { "type": "string", "minLength": 1 },
+              "sceneId": { "type": "string", "minLength": 1 },
+              "targetSceneId": { "type": "string", "minLength": 1 },
+              "seat": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "preconditions": { "type": "array", "items": {} },
+              "effectOps": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["op", "path"],
+                  "properties": {
+                    "op": { "enum": ["set", "increment", "decrement", "toggle", "append", "remove"] },
+                    "path": { "type": "string", "minLength": 1 },
+                    "value": {}
+                  }
+                }
+              },
+              "costs": { "type": "array", "items": { "type": "object" } },
+              "counteractionId": { "type": "string" },
+              "decisionCueId": { "type": "string", "minLength": 1 },
+              "publicEcho": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "required": ["rules", "testVectors"],
+          "properties": {
+            "rules": { "type": "array", "minItems": 2, "items": { "type": "object" } },
+            "testVectors": { "type": "array", "minItems": 2, "items": { "type": "object" } },
+            "projectionContract": { "type": "object" }
+          }
+        }
+      }
+    },
+    "sellingPointMapping": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "originality": { "type": "object" }
+  }
+}

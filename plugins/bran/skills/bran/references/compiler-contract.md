@@ -12,12 +12,15 @@ source material
   -> BranInputBundle
   -> deterministic Bran compiler
   -> NarrativePackage + ProductionRequest + CompileReceipt
-  -> downstream review, simulation, and release
+  -> Hodor target or another runtime adapter
+  -> downstream review, simulation, production, and release
 ```
 
 Creative Agents may propose events, scenes, dialogue, and actions before compilation. Their outputs remain provisional until they use stable IDs, resolve source and canon references, register every state path, and pass the compiler diagnostics.
 
 The compiler does not call an LLM. It converts reviewed structured authoring output into a stable intermediate representation. This keeps model choice and prompt orchestration outside the executable package and makes repeated compilation reproducible.
+
+Declare `project.entrySceneId` when the first scene is not the entry. Give every action a `targetSceneId` when its scene declares more than one `nextSceneId`. The compiler rejects missing branch destinations and scenes unreachable from the entry.
 
 ## SourceEvent ledger
 
@@ -63,6 +66,14 @@ Do not label a compiled draft as release-ready.
 `production-request.json` describes semantic asset slots. It may state scene and beat IDs, purpose, required characters, continuity references, runtime cues, fallback behavior, and constraints.
 
 The downstream material workflow may attach generated asset references to those slots. It cannot rewrite source events, canon facts, actions, `WorldState`, or settlement rules. A released StoryPackage is the reviewed narrative package plus accepted downstream asset references.
+
+## Hodor interactive-story target
+
+Use `bran export-hodor` after compile audit. Bran scenes become Hodor nodes with bound script candidates, typed actions become player-choice edges, state fields become Hodor variables, and settlement rules become explicit conditional ending edges.
+
+Bran dotted state paths are mapped to Hodor-safe identifiers. Derived fields are expanded into their source expressions because the current Hodor graph stores condition text and does not own Bran's derived-state reducer.
+
+Hodor assigns database IDs during import. Preserve stable Bran keys in an import receipt and verify it with `bran verify-hodor`. The receipt is required for incremental branch edits, version comparison, and safe retries.
 
 ## Runtime handoff
 

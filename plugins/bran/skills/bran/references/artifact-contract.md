@@ -26,4 +26,10 @@ The minimum package contains these responsibilities. Filenames may vary when the
 
 Stable IDs must survive downstream asset production. Public world text uses third-person factual narration. Operational instructions stay in action objects.
 
+## Optional Hodor target
+
+When the package continues into the Hodor interactive canvas, export `hodor-interactive-story-target.json` after compile audit. Require stable Bran keys for every node, edge, and variable; a complete node script; explicit entry and ending nodes; typed Hodor-compatible effects; the source package artifact hash; and a deterministic target hash.
+
+Hodor must return an import receipt that binds Bran keys to graph, node, edge, variable, and `o_script` IDs and includes the final revision plus a passing graph validation report. Keep this receipt outside the immutable narrative package unless a new package version intentionally records it as downstream evidence.
+
 Use `compiled`, `reviewed`, and `release` as distinct lifecycle states. Static compilation cannot create replay evidence or human approval by declaration.

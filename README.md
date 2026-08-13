@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-Bran is an Agent Skill and zero-dependency Node.js compiler for building and auditing executable branching-story packages for replayable AI games.
+Bran is a pair of Agent Skills and a zero-dependency Node.js compiler for clean-room script rewriting, executable branching-story compilation, and reproducible narrative audits.
 
 It is designed for a recurring production failure: a story package may contain many branches on paper while giving players the same strategy, the same dominant choice, or an ending that contradicts the final world state. Bran turns narrative intent into typed actions and checks the resulting behavior.
 
@@ -16,10 +16,28 @@ BranInputBundle: canon + characters + scenes + world rules
 bran compile -> NarrativePackage + RuntimeContract + ProductionRequest
         |
         v
+bran export-hodor -> nodes + choices + variables + endings + binding contract
+        |
+        v
 deterministic reducer -> world state -> settlement receipt -> ending projection
 ```
 
 Bran is Hodor's narrative-compilation layer. It owns source grounding, story and interaction structure, typed actions, world-state rules, character Agent boundaries, and deterministic settlement. Downstream material production receives semantic asset slots and may fill asset references without changing narrative state or endings.
+
+`bran-rewrite` is the pre-review child skill. It accepts authorized source material, stores evidence in an analyst-only area, seals abstract Story DNA into a writer-only clean-room brief, packages an independently designed draft, and stops at `awaiting-taste-review`.
+
+```text
+PDF / DOCX / FDX / Fountain / Markdown / novel text
+        |
+        v
+ScriptBreak + LangExtract compatible evidence ledger
+        |
+        v
+Story DNA -> sealed clean-room brief -> independent draft
+        |
+        v
+BranInputBundle -> bran compile/audit -> awaiting Taste review
+```
 
 ## What Bran checks
 
@@ -47,6 +65,7 @@ To install only the Agent Skill, ask Codex:
 
 ```text
 $skill-installer install https://github.com/JonathonGuo777/bran/tree/main/plugins/bran/skills/bran
+$skill-installer install https://github.com/JonathonGuo777/bran/tree/main/plugins/bran/skills/bran-rewrite
 ```
 
 After a direct skill install, restart Codex so it can discover the new skill.
@@ -57,11 +76,49 @@ After a direct skill install, restart Codex so it can discover the new skill.
 git clone https://github.com/JonathonGuo777/bran.git
 mkdir -p ~/.codex/skills
 cp -R bran/plugins/bran/skills/bran ~/.codex/skills/bran
+cp -R bran/plugins/bran/skills/bran-rewrite ~/.codex/skills/bran-rewrite
 ```
 
 The skill follows the portable `SKILL.md` convention. Other compatible agents can install the same `plugins/bran/skills/bran` directory in their own skill path.
 
 ## Use
+
+Run the rewrite pipeline up to the human Taste-review boundary:
+
+```bash
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs ingest \
+  /absolute/path/to/source.fdx \
+  --out /absolute/path/to/rewrite-workspace \
+  --rights licensed \
+  --rights-basis "Contract and adaptation scope"
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs extract \
+  /absolute/path/to/rewrite-workspace \
+  --input /absolute/path/to/extraction-ledger.json
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs seal-dna \
+  /absolute/path/to/rewrite-workspace \
+  --input /absolute/path/to/story-dna.json
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs brief \
+  /absolute/path/to/rewrite-workspace
+
+node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs generate \
+  /absolute/path/to/rewrite-workspace \
+  --draft /absolute/path/to/rewrite-draft.json
+```
+
+Pipe pasted source through standard input:
+
+```bash
+pbpaste | node plugins/bran/skills/bran-rewrite/scripts/bran-rewrite.mjs ingest - \
+  --format text \
+  --out /absolute/path/to/rewrite-workspace \
+  --rights owned \
+  --rights-basis "Company-owned original source"
+```
+
+Generation is blocked for `unknown` and `internal-research` rights states. Machine similarity and provenance checks produce risk signals and do not provide legal clearance.
 
 Invoke Bran with a concrete source boundary and target package:
 
@@ -88,6 +145,46 @@ node plugins/bran/skills/bran/scripts/bran.mjs audit \
   /tmp/harbor-signal-handoff \
   --level compile
 ```
+
+Export a compile-audited package to the Hodor interactive-story contract:
+
+```bash
+node plugins/bran/skills/bran/scripts/bran.mjs export-hodor \
+  /tmp/harbor-signal-handoff \
+  --project-id 1785137013680 \
+  --out /tmp/hodor-target.json
+```
+
+The exporter produces Hodor-compatible node kinds, bound script candidates, positions, choice conditions, variable effects, a settlement hub, and explicit endings. After Hodor persists the graph, require a stable-ID binding and validation receipt:
+
+```bash
+export HODOR_TOKEN="local bearer token"
+node plugins/bran/skills/bran/scripts/bran.mjs apply-hodor \
+  /tmp/hodor-target.json \
+  --base-url http://127.0.0.1:10588 \
+  --receipt /tmp/hodor-import-receipt.json
+
+node plugins/bran/skills/bran/scripts/bran.mjs verify-hodor \
+  /tmp/hodor-target.json \
+  --receipt /absolute/path/to/hodor-import-receipt.json
+```
+
+`apply-hodor` refreshes the revision after every mutation and continuously saves node, script, edge, and variable bindings. Reusing the same target and receipt resumes an interrupted import. A non-empty graph without a matching receipt is rejected to prevent duplicate imports.
+
+Use `diff-hodor` and `sync-hodor` for a revised Bran package:
+
+```bash
+node plugins/bran/skills/bran/scripts/bran.mjs diff-hodor \
+  /tmp/hodor-target.json /tmp/hodor-target-v2.json
+
+node plugins/bran/skills/bran/scripts/bran.mjs sync-hodor \
+  /tmp/hodor-target.json /tmp/hodor-target-v2.json \
+  --base-receipt /tmp/hodor-import-receipt.json \
+  --base-url http://127.0.0.1:10588 \
+  --receipt /tmp/hodor-import-receipt-v2.json
+```
+
+The sync uses stable receipt bindings to create, update, and remove graph records under Hodor revision guards. Direct REST apply or sync requires one click on the Hodor canvas refresh control when the canvas is already open.
 
 Record a hash-bound author review for one stage:
 
@@ -148,6 +245,8 @@ Packages produced before `0.2.0` may contain prose-only derived-state formulas. 
 - `NarrativePackage` is the stable intermediate representation consumed by audit and runtime integration.
 - `RuntimeContract` defines typed actions plus `WorldEvent`, `RelationshipEventCandidate`, and `ContentFeedback` envelopes.
 - `ProductionRequest` declares semantic asset slots. It contains no image, video, audio, provider, or generation-task implementation.
+- `HodorTarget` projects Bran scenes, actions, state, and settlement into the Hodor canvas contract.
+- `HodorImportReceipt` binds stable Bran keys to Hodor node, edge, variable, and `o_script` IDs.
 
 ## Repository layout
 
@@ -181,6 +280,7 @@ The exact responsibilities and default gates live in:
 - [`artifact-contract.md`](plugins/bran/skills/bran/references/artifact-contract.md)
 - [`quality-gates.md`](plugins/bran/skills/bran/references/quality-gates.md)
 - [`skill-adaptation.md`](plugins/bran/skills/bran/references/skill-adaptation.md)
+- [`hodor-target-contract.md`](plugins/bran/skills/bran/references/hodor-target-contract.md)
 
 ## Design boundary
 

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JonathonGuo777/bran/schemas/bran-rewrite/source-record.schema.json",
+  "title": "Bran Rewrite Source Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "sourceId", "title", "format", "language", "contentHash", "rights"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "sourceId": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "format": { "enum": ["pdf", "fdx", "fountain", "text", "markdown", "json"] },
+    "language": { "type": "string", "minLength": 2 },
+    "originalPath": { "type": "string" },
+    "normalizedPath": { "const": "analyst/source.txt" },
+    "contentHash": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "basis"],
+      "properties": {
+        "status": { "enum": ["owned", "licensed", "public-domain", "internal-research", "unknown"] },
+        "basis": { "type": "string", "minLength": 1 },
+        "jurisdiction": { "type": "string" },
+        "verificationNote": { "type": "string" },
+        "evidenceRef": { "type": "string" }
+      }
+    }
+  }
+}

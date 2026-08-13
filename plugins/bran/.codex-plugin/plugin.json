@@ -1,7 +1,7 @@
 {
   "name": "bran",
-  "version": "0.2.0",
-  "description": "Compile structured story events into executable narrative packages and audit their branching mechanics.",
+  "version": "0.3.0",
+  "description": "Extract clean-room Story DNA, generate pre-review rewrites, compile structured story events, and audit executable narrative packages.",
   "author": {
     "name": "Jon Guo",
     "url": "https://github.com/JonathonGuo777"
@@ -12,15 +12,17 @@
   "keywords": [
     "agent-skills",
     "branching-narrative",
+    "clean-room-rewrite",
     "interactive-fiction",
     "multi-agent",
-    "narrative-game"
+    "narrative-game",
+    "screenplay"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Bran",
-    "shortDescription": "Compile and validate branching story packages",
-    "longDescription": "Turn grounded source events and world rules into validated NarrativePackages with typed actions, multi-seat visibility, replay variants, runtime and downstream handoff contracts, deterministic settlement, and reproducible receipts.",
+    "shortDescription": "Rewrite, compile, and validate story packages",
+    "longDescription": "Turn authorized source material into evidence-backed Story DNA, a sealed clean-room brief, an independently designed script draft, and a validated NarrativePackage with deterministic receipts.",
     "developerName": "Jon Guo",
     "category": "Productivity",
     "capabilities": [
